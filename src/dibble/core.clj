@@ -2,11 +2,6 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
-(defn randomized [column-name]
-  5)
-
-(defmacro seed [& columns])
-
 (defn mysql-to-clj-type [[column data-type]]
   (cond (re-matches #"varchar.*" data-type) {(keyword column) :string}
         (re-matches #"int.*" data-type) {(keyword column) :integer}))
@@ -25,8 +20,14 @@
   (cond (= (:vendor (:database args)) :mysql) (mysql-db args)
         :else (println "Database :vendor not supported")))
 
-(seed-table
- {:database {:vendor :mysql :db "simulation" :user "root" :password ""}
-  :table :people})
+(def description (seed-table {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}))
+
+(defn randomized [column table-description]
+  (let [data-type (get table-description column)]
+    (cond (= data-type :string) "Mike"
+          (= data-type :integer) 42)))
+
+(randomized :name description)
+(randomized :number description)
 
 (defn -main [& args])
