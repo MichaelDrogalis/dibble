@@ -7,10 +7,10 @@
         (re-matches #"int.*" data-type) {(keyword column) :integer}))
 
 (defn mysql-db [args]
+  (defdb target-db (mysql (:database args)))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
-    (defdb target-db (mysql (:database args)))
     (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
 
 (defn randomized [column]
@@ -25,7 +25,7 @@
   (fn [table-description]
     (reduce
      (fn [data-seed rule-fn]
-       (merge data-seed ((rule-fn) table-description)))
+       (merge data-seed (rule-fn table-description)))
      {} rules)))
 
 (defn seed-table [args & seeds]
@@ -33,12 +33,11 @@
                                 :else (throw (Throwable. "Database :vendor not supported")))]
     (map (fn [f] (f table-description)) seeds)))
 
-(seed-table
- {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}
- (seed
-  (randomized :name)
-  (randomized :number))
- (seed
-  (randomized :name)))
-
-(defn -main [& args])
+(defn -main [& args]
+  (seed-table
+   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}
+   (seed
+    (randomized :name)
+    (randomized :number))
+   (seed
+    (randomized :name))))
