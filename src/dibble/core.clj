@@ -7,7 +7,7 @@
         (re-matches #"int.*" data-type) {(keyword column) :integer}))
 
 (defn mysql-db [args]
-  (defdb target-db (mysql (:database args)))
+  (default-connection (create-db (mysql (:database args))))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
