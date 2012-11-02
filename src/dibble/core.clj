@@ -32,11 +32,13 @@
   (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql-db args)
                                 :else (throw (Throwable. "Database :vendor not supported")))
         seeds (map (fn [f] (f table-description)) seeds)]
+    (if (= (:policy args) :clean-slate)
+      (delete (:table args)))
     (insert (:table args) (values seeds))))
 
 (defn -main [& args]
   (seed-table
-   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}
+   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people :policy :clean-slate}
    (seed
     (randomized :name)
     (randomized :number))
