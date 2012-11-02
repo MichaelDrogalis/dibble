@@ -19,12 +19,18 @@
        (merge data-seed (rule-fn table-description)))
      {} rules)))
 
+(defn parse-description [args]
+  (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
+        :else (throw (Throwable. "Database :vendor not supported"))))
+
+(defn apply-policies [args]
+  (if (= (:policy args) :clean-slate)
+    (delete (:table args))))
+  
 (defn seed-table [args & seeds]
-  (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
-                                :else (throw (Throwable. "Database :vendor not supported")))
+  (let [table-description (parse-description args)
         seeds (map (fn [f] (f table-description)) seeds)]
-    (if (= (:policy args) :clean-slate)
-      (delete (:table args)))
+    (apply-policies args)
     (insert (:table args) (values seeds))))
 
 (defn -main [& args]
