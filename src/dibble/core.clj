@@ -30,8 +30,9 @@
 
 (defn seed-table [args & seeds]
   (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql-db args)
-                                :else (throw (Throwable. "Database :vendor not supported")))]
-    (map (fn [f] (f table-description)) seeds)))
+                                :else (throw (Throwable. "Database :vendor not supported")))
+        seeds (map (fn [f] (f table-description)) seeds)]
+    (insert (:table args) (values seeds))))
 
 (defn -main [& args]
   (seed-table
