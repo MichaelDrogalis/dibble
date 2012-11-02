@@ -1,6 +1,7 @@
 (ns dibble.core
   (:require [korma.core :refer :all]
-            [korma.db :refer :all]))
+            [korma.db :refer :all]
+            [zombie.core :refer :all]))
 
 (defn mysql-to-clj-type [[column data-type]]
   (cond (re-matches #"varchar.*" data-type) {(keyword column) :string}
@@ -17,8 +18,8 @@
   (partial
    (fn [column table-description]
      (let [data-type (get table-description column)]
-       (cond (= data-type :string) {column "Mike"}
-             (= data-type :integer) {column 42})))
+       (cond (= data-type :string) {column (random-string)}
+             (= data-type :integer) {column (int (random-integer))})))
    column))
 
 (defn seed [& rules]
