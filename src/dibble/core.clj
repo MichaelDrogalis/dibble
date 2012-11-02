@@ -25,15 +25,17 @@
        (merge data-seed (rule-fn table-description)))
      {} rules)))
 
-(defn seed-table [args seed]
+(defn seed-table [args & seeds]
   (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql-db args)
                                 :else (throw (Throwable. "Database :vendor not supported")))]
-    (seed table-description)))
+    (map (fn [f] (f table-description)) seeds)))
 
 (seed-table
  {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}
  (seed
   (partial randomized :name)
-  (partial randomized :number)))
+  (partial randomized :number))
+ (seed
+  (partial randomized :name)))
 
 (defn -main [& args])
