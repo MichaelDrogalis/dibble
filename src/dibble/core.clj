@@ -13,16 +13,19 @@
     (defdb target-db (mysql (:database args)))
     (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
 
-(defn randomized [column table-description]
-  (let [data-type (get table-description column)]
-    (cond (= data-type :string) {column "Mike"}
-          (= data-type :integer) {column 42})))
+(defn randomized [column]
+  (partial
+   (fn [column table-description]
+     (let [data-type (get table-description column)]
+       (cond (= data-type :string) {column "Mike"}
+             (= data-type :integer) {column 42})))
+   column))
 
 (defn seed [& rules]
   (fn [table-description]
     (reduce
      (fn [data-seed rule-fn]
-       (merge data-seed (rule-fn table-description)))
+       (merge data-seed ((rule-fn) table-description)))
      {} rules)))
 
 (defn seed-table [args & seeds]
@@ -33,9 +36,9 @@
 (seed-table
  {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people}
  (seed
-  (partial randomized :name)
-  (partial randomized :number))
+  (randomized :name)
+  (randomized :number))
  (seed
-  (partial randomized :name)))
+  (randomized :name)))
 
 (defn -main [& args])
