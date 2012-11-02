@@ -21,7 +21,15 @@
 
 (defn randomized [column table-description]
   (let [data-type (get table-description column)]
-    (cond (= data-type :string) "Mike"
-          (= data-type :integer) 42)))
+    (cond (= data-type :string) {column "Mike"}
+          (= data-type :integer) {column 42})))
+
+(defn seed [table-description & rules]
+  (reduce
+   (fn [data-seed rule-fn]
+     (merge data-seed (rule-fn table-description)))
+   {} rules))
+
+(println (seed description (partial randomized :name) (partial randomized :number)))
 
 (defn -main [& args])
