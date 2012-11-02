@@ -1,18 +1,8 @@
 (ns dibble.core
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
-            [zombie.core :refer :all]))
-
-(defn mysql-to-clj-type [[column data-type]]
-  (cond (re-matches #"varchar.*" data-type) {(keyword column) :string}
-        (re-matches #"int.*" data-type) {(keyword column) :integer}))
-
-(defn mysql-db [args]
-  (default-connection (create-db (mysql (:database args))))
-  (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
-        fields (map :Field query)
-        types (map :Type query)]
-    (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
+            [zombie.core :refer :all]
+            [dibble.mysql :as mysql]))
 
 (defn randomized [column]
   (partial
@@ -30,7 +20,7 @@
      {} rules)))
 
 (defn seed-table [args & seeds]
-  (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql-db args)
+  (let [table-description (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
                                 :else (throw (Throwable. "Database :vendor not supported")))
         seeds (map (fn [f] (f table-description)) seeds)]
     (if (= (:policy args) :clean-slate)
