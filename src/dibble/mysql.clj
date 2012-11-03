@@ -5,9 +5,9 @@
 (defn mysql-to-clj-type [[column data-type]]
   (if-let [description (re-matches #"varchar\((\d+)\)" data-type)]
     {(keyword column) {:type :string :max-chars (nth description 1)}}
-    (if-let [description (re-matches #"int\((\d+)\)" data-type)]
-      {(keyword column) {:type :integer :max-bits (nth description 1)}})))
-      
+    (if-let [description (re-matches #"(tinyint|smallint|mediumint|int|bigint)\((\d+)\)" data-type)]
+      {(keyword column) {:type :integer :max-bits (nth description 2)}})))
+
 (defn mysql-db [args]
   (default-connection (create-db (mysql (:database args))))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
