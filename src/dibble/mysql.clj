@@ -6,7 +6,9 @@
   (if-let [description (re-matches #"varchar\((\d+)\)" data-type)]
     {(keyword column) {:type :string :max-chars (nth description 1)}}
     (if-let [description (re-matches #"(tinyint|smallint|mediumint|int|bigint)\((\d+)\)" data-type)]
-      {(keyword column) {:type :integer :max-bits (nth description 2)}})))
+      {(keyword column) {:type :integer :max-bits (nth description 2)}}
+      (if-let [description (re-matches #"(double|decimal)\((\d+),(\d+)\)" data-type)]
+        {(keyword column) {:type :decimal :accuracy (read-string (nth description 2)) :precision (read-string (nth description 3))}}))))
 
 (defn mysql-db [args]
   (default-connection (create-db (mysql (:database args))))
