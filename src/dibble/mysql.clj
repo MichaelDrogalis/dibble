@@ -8,7 +8,9 @@
     (if-let [description (re-matches #"(tinyint|smallint|mediumint|int|bigint)\((\d+)\)" data-type)]
       {(keyword column) {:type :integer :max-bits (nth description 2)}}
       (if-let [description (re-matches #"(double|decimal)\((\d+),(\d+)\)" data-type)]
-        {(keyword column) {:type :decimal :accuracy (read-string (nth description 2)) :precision (read-string (nth description 3))}}))))
+        {(keyword column) {:type :decimal :accuracy (read-string (nth description 2)) :precision (read-string (nth description 3))}}
+        (if (re-matches #"float" data-type)
+          {(keyword column) {:type :float}})))))
 
 (defn mysql-db [args]
   (default-connection (create-db (mysql (:database args))))
