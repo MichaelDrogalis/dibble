@@ -7,7 +7,7 @@
 (defn randomized [column]
   (partial
    (fn [column table-description]
-     (let [data-type (get table-description column)]
+     (let [data-type (:type (get table-description column))]
        (cond (= data-type :string) {column (random-string)}
              (= data-type :integer) {column (int (random-integer))})))
    column))
@@ -29,9 +29,10 @@
   
 (defn seed-table [args & seeds]
   (let [table-description (parse-description args)
-        seeds (map (fn [f] (f table-description)) seeds)]
+        data (map (fn [f] (f table-description)) seeds)]
+    (println data)
     (apply-policies args)
-    (insert (:table args) (values seeds))))
+    (insert (:table args) (values data))))
 
 (defn -main [& args]
   (seed-table
