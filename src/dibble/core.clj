@@ -4,12 +4,17 @@
             [zombie.core :refer :all]
             [dibble.mysql :as mysql]))
 
+(defn simple-random-floating []
+  (+ (* 10 (rand)) (rand)))
+  
 (defn randomized [column]
   (partial
    (fn [column table-description]
      (let [data-type (:type (get table-description column))]
        (cond (= data-type :string) {column (random-string)}
-             (= data-type :integer) {column (int (random-integer))})))
+             (= data-type :integer) {column (int (random-integer))}
+             (= data-type :decimal) {column (simple-random-floating)}
+             (= data-type :float) {column (simple-random-floating)})))
    column))
 
 (defn seed [& rules]
@@ -36,9 +41,11 @@
 
 (defn -main [& args]
   (seed-table
-   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people :policy :clean-slate}
+   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate}
    (seed
     (randomized :name)
-    (randomized :number))
-   (seed
-    (randomized :name))))
+    (randomized :number)
+    (randomized :money)
+    (randomized :about)
+    (randomized :secret)
+    (randomized :salt))))
