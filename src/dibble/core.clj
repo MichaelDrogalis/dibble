@@ -5,13 +5,15 @@
             [dibble.strings :refer :all]
             [dibble.numbers :refer :all]))
 
-(defn randomized [column]
-  (partial
-   (fn [column table-description]
-     (let [data-type (:type (get table-description column))]
-       (cond (= data-type :string) {column (randomized-string (get table-description column))}
-             (= data-type :integer) {column (randomized-integer (get table-description column))})))
-   column))
+(defn randomized
+  ([column] (randomized column {}))
+  ([column args]
+     (partial
+      (fn [column args table-description]
+        (let [data-type (:type (get table-description column))]
+          (cond (= data-type :string) {column (randomized-string (get table-description column) args)}
+                (= data-type :integer) {column (randomized-integer (get table-description column) args)})))
+      column (merge args {}))))
 
 (defn seed [& rules]
   (fn [table-description]
@@ -39,5 +41,5 @@
   (seed-table
    {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate :n 50}
    (seed
-    (randomized :name)
+    (randomized :name {:length 4})
     (randomized :number))))
