@@ -36,15 +36,15 @@
     (delete (:table args))))
   
 (defn seed-table [args & seeds]
-  (let [table-description (parse-description args)
-        data (map (fn [f] (f table-description)) seeds)]
-    (println data)
+  (let [table-description (parse-description args)]
     (apply-policies args)
-    (insert (:table args) (values data))))
+    (dotimes [_ (:n args 1)]
+      (let [data (map (fn [f] (f table-description)) seeds)]
+        (insert (:table args) (values data))))))
 
 (defn -main [& args]
   (seed-table
-   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate}
+   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate :n 50}
    (seed
     (randomized :name)
     (randomized :number))))
