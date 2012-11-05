@@ -10,9 +10,7 @@
    (fn [column table-description]
      (let [data-type (:type (get table-description column))]
        (cond (= data-type :string) {column (randomized-string (get table-description column))}
-             (= data-type :integer) {column (randomized-integer (get table-description column))}
-             (= data-type :decimal) {column 0.00}
-             (= data-type :float) {column 0.00})))
+             (= data-type :integer) {column (randomized-integer (get table-description column))})))
    column))
 
 (defn seed [& rules]
