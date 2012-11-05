@@ -2,13 +2,8 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
             [dibble.mysql :as mysql]
-            [dibble.strings :refer :all]))
-
-(defn random-integer [low high]
-  (first (shuffle (range low (inc high)))))
-
-(defn randomized-integer [column]
-  (Integer/parseInt (apply str (map (fn [_] (first (shuffle (range 0 2)))) (range 0 (dec (* (:bytes column) 8))))) 2))
+            [dibble.strings :refer :all]
+            [dibble.numbers :refer :all]))
 
 (defn randomized [column]
   (partial
