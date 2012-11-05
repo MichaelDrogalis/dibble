@@ -1,20 +1,26 @@
 (ns dibble.core
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
-            [zombie.core :refer :all]
-            [dibble.mysql :as mysql]))
+            [dibble.mysql :as mysql]
+            [dibble.strings :refer :all]))
 
-(defn simple-random-floating []
-  (+ (* 10 (rand)) (rand)))
-  
+(defn random-integer [low high]
+  (first (shuffle (range low (inc high)))))
+
+(defn randomized-string [column]
+  (random-string (random-integer 0 (:max-chars column))))
+
+(defn randomized-integer [column]
+  (Integer/parseInt (apply str (map (fn [_] (first (shuffle (range 0 2)))) (range 0 (dec (* (:bytes column) 8))))) 2))
+
 (defn randomized [column]
   (partial
    (fn [column table-description]
      (let [data-type (:type (get table-description column))]
-       (cond (= data-type :string) {column (random-string)}
-             (= data-type :integer) {column (int (random-integer))}
-             (= data-type :decimal) {column (simple-random-floating)}
-             (= data-type :float) {column (simple-random-floating)})))
+       (cond (= data-type :string) {column (randomized-string (get table-description column))}
+             (= data-type :integer) {column (randomized-integer (get table-description column))}
+             (= data-type :decimal) {column 0.00}
+             (= data-type :float) {column 0.00})))
    column))
 
 (defn seed [& rules]
@@ -44,8 +50,4 @@
    {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate}
    (seed
     (randomized :name)
-    (randomized :number)
-    (randomized :money)
-    (randomized :about)
-    (randomized :secret)
-    (randomized :salt))))
+    (randomized :number))))
