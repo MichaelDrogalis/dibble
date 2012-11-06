@@ -30,24 +30,23 @@
   (if (= (:policy args) :clean-slate)
     (delete (:table args))))
   
-(defn seed-table [args & seeds]
+(defn seed-table [[args & seeds]]
   (let [table-description (parse-description args)]
     (apply-policies args)
     (dotimes [_ (:n args 1)]
-      (let [data (map (fn [f] (f table-description)) seeds)]
+      (let [data (apply merge (map (fn [f] (f table-description)) seeds))]
         (insert (:table args) (values data))))))
+      
+(defmacro defseed [seed-name args & rules]
+  `(def ~seed-name [~args ~@rules]))
 
 (def db {:vendor :mysql :db "simulation" :user "root" :password ""})
 
-(defn inherited [column])
-
-(defn fk [args & seeds]
-  (println args))
+(defseed people
+  {:database db :table :persons :policy :clean-slate :n 50}
+  (randomized :name)
+  (randomized :number))
 
 (defn -main [& args]
-  (seed-table
-   {:database db :table :persons :policy :clean-slate :n 50}
-   (seed
-    (randomized :name)
-    (randomized :number {:min -5 :max 20}))))
-     
+  (seed-table people))
+
