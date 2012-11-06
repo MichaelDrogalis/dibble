@@ -10,9 +10,10 @@
   ([column args]
      (partial
       (fn [column args table-description]
-        (let [data-type (:type (get table-description column))]
-          (cond (= data-type :string) {column (randomized-string (get table-description column) args)}
-                (= data-type :integer) {column (randomized-integer (get table-description column) args)})))
+        (let [constraints (get table-description column)
+              data-type (:type constraints)]
+          (cond (= data-type :string) {column (randomized-string constraints args)}
+                (= data-type :integer) {column (randomized-integer constraints args)})))
       column args)))
 
 (defn seed [& rules]
