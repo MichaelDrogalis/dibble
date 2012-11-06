@@ -41,5 +41,5 @@
   (seed-table
    {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate :n 50}
    (seed
-    (randomized :name {:length 4})
+    (randomized :name {:max 5})
     (randomized :number))))
