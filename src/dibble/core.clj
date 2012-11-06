@@ -13,7 +13,7 @@
         (let [data-type (:type (get table-description column))]
           (cond (= data-type :string) {column (randomized-string (get table-description column) args)}
                 (= data-type :integer) {column (randomized-integer (get table-description column) args)})))
-      column (merge args {}))))
+      column args)))
 
 (defn seed [& rules]
   (fn [table-description]
@@ -41,5 +41,5 @@
   (seed-table
    {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate :n 50}
    (seed
-    (randomized :name {:max 5})
+    (randomized :name)
     (randomized :number))))
