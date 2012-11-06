@@ -37,9 +37,17 @@
       (let [data (map (fn [f] (f table-description)) seeds)]
         (insert (:table args) (values data))))))
 
+(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+
+(defn inherited [column])
+
+(defn fk [args & seeds]
+  (println args))
+
 (defn -main [& args]
   (seed-table
-   {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :persons :policy :clean-slate :n 50}
+   {:database db :table :persons :policy :clean-slate :n 50}
    (seed
     (randomized :name)
-    (randomized :number))))
+    (randomized :number {:min -5 :max 20}))))
+     
