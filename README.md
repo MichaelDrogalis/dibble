@@ -100,16 +100,29 @@ SQLite   | Not yet
 ### MySQL Support
 MySQL type   | Supported? | Maps to Dibble type
 ------------ | ---------- | -------------------
-`varchar(*)` | Yes        | `:string`
-`int(*)`     | Yes        | `:integer`
-`char(*)`    | No         | `:string`
+`varchar`    | Yes        | `:string`
+`int`        | Yes        | `:integer`
+`char`       | No         | `:string`
 `tinytext`   | No         | `:string`
 `text`       | No         | `:string`
 `mediumtext` | No         | `:string`
-`longtext`   | No         | `string`
+`longtext`   | No         | `:string`
+`tinyint`    | No         | `:integer`
+`smallint`   | No         | `:integer`
+`mediumint`  | No         | `:integer`
+`bigint`     | No         | `:integer`
+`float`      | No         | `:decimal`
+`double`     | No         | `:decimal`
+`decimal`    | No         | `:decimal`
+`date`       | No         | ?
+`datetime`   | No         | ?
+`timestamp`  | No         | ?
+`time`       | No         | ?
 `blob`       | No         | ?
 `mediumblob` | No         | ?
 `longblob`   | No         | ?
+`enum`       | No         | -
+`set`        | No         | -
 
 ## License
 
