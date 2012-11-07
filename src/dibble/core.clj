@@ -5,6 +5,9 @@
             [dibble.strings :refer :all]
             [dibble.numbers :refer :all]))
 
+(defmacro defseed [seed-name args & rules]
+  `(def ~seed-name [~args ~@rules]))
+
 (defn seed [& rules]
   (fn [table-description]
     (reduce
@@ -19,7 +22,7 @@
 (defn apply-policies [args]
   (if (= (:policy args) :clean-slate)
     (delete (:table args))))
-  
+
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & seeds]
@@ -28,6 +31,13 @@
        (dotimes [_ (:n args 1)]
          (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
            (insert (:table args) (values data)))))))
+
+(defn bequeath-value! [args data]
+  (if (:fk args)
+    (do
+      (let [[foreign-table foreign-column] (:fk args)]
+        (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
+                                  (rest foreign-table)))))))
 
 (defn randomized
   ([column] (randomized column {}))
@@ -38,16 +48,9 @@
               data-type (:type constraints)
               result (cond (= data-type :string) (randomized-string constraints args)
                            (= data-type :integer) (randomized-integer constraints args))]
-          (if (:fk args)
-            (do
-              (let [[foreign-table foreign-column] (:fk args)]
-                (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column result})] (rest foreign-table))))))
-          
+          (bequeath-value! args result)
           {column result}))
       column args)))
-
-(defmacro defseed [seed-name args & rules]
-  `(def ~seed-name [~args ~@rules]))
 
 (defn inherit
   ([column] (inherit column {}))
