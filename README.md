@@ -5,7 +5,7 @@ Dibble is a Clojure library that intelligently, randomly seeds databases by infe
 ## Installation
 
 Available on Clojars:
-`[dibble "0.1.0-SNAPSHOT"]`
+```[dibble "0.1.0-SNAPSHOT"]```
 
 ## Usage
 
