@@ -97,6 +97,20 @@ Oracle   | Not yet
 MSSQL    | Not yet
 SQLite   | Not yet
 
+### MySQL Support
+MySQL type   | Supported? | Maps to Dibble type
+------------ | ---------- | -------------------
+`varchar(*)` | Yes        | `:string`
+`int(*)`     | Yes        | `:integer`
+`char(*)`    | No         | `:string`
+`tinytext`   | No         | `:string`
+`text`       | No         | `:string`
+`mediumtext` | No         | `:string`
+`longtext`   | No         | `string`
+`blob`       | No         | ?
+`mediumblob` | No         | ?
+`longblob`   | No         | ?
+
 ## License
 
 Copyright © 2012 Michael Drogalis
