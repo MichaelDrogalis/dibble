@@ -142,10 +142,10 @@ Option       | Usage            | Description                                 | 
 
 ## Dibble Policies
 
-Policy         | Usage                                            | Description
--------------- | ------------------------------------------------ | -----------
-`:append`      | `{:policy :append}`                              | Append seeds to what is currently in the table
-`:clean-slate` | `{:policy :clean-slate`                          | Delete all rows in the table before seeding
+Policy         | Usage                    | Description
+-------------- | ------------------------ | -----------
+`:append`      | `{:policy :append}`      | Append seeds to what is currently in the table
+`:clean-slate` | `{:policy :clean-slate}` | Delete all rows in the table before seeding
 
 ## License
 
