@@ -140,6 +140,13 @@ Option       | Usage            | Description                                 | 
 `:min`       | `{:min 5}`       | Generated integer is 5 or greater           |
 `:max`       | `{:max 60}`      | Generated integer is 60 is less             |
 
+## Dibble Policies
+
+Policy         | Usage                                            | Description
+-------------- | ------------------------------------------------ | -----------
+`:append`      | `{:policy :append}`                              | Append seeds to what is currently in the table
+`:clean-slate` | `{:policy :clean-slate`                          | Delete all rows in the table before seeding
+
 ## License
 
 Copyright © 2012 Michael Drogalis
