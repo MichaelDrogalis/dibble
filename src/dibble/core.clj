@@ -60,18 +60,3 @@
         {column (get (:autogen seeding-args) column)})
       column args)))
 
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
-
-(defseed pets
-  {:database db :table :pets}
-  (inherit :pid)
-  (randomized :name))
-
-(defseed people
-  {:database db :table :persons :policy :transitive :dependents [:pets] :n 50}
-  (randomized :name)
-  (randomized :number {:fk [pets :pid]}))
-
-(defn -main [& args]
-  (seed-table people))
-
