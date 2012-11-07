@@ -164,8 +164,8 @@ Creates a random seed of the appropriate type. Takes option to constraint genera
 Receive a value as a result of another seeding operation. Useful for when a column is a foreign key.
 
 ```clojure
-(inherited :column) ;;; skeleton
-(inherited :id)     ;;; :id will be generated as the result of another seed in another table
+(inherit :column) ;;; skeleton
+(inherit :id)     ;;; :id will be generated as the result of another seed in another table
 ```
 
 ## Contribute
