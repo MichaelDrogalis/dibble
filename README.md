@@ -130,10 +130,15 @@ MySQL type   | Supported? | Maps to Dibble type
 
 Option       | Usage            | Description                                 | Mutually exclusive with
 -------------|------------------|---------------------------------------------|------------------------
-`:min-chars` | `{:min-chars 5}` | Generated string length has a minimum of 5. |
-`:max-chars` | `{:max-chars 10` | Generated string length has a maximum of 10.|
-`:length`    | `{:length 8}`    | Genereted string is exactly 8 characters.   | `:min-chars`, `:max-chars`
+`:min-chars` | `{:min-chars 5}` | Generated string length has a minimum of 5  | `:length`
+`:max-chars` | `{:max-chars 10` | Generated string length has a maximum of 10 | `:length`
+`:length`    | `{:length 8}`    | Genereted string is exactly 8 characters    | `:min-chars`, `:max-chars`
 
+### `:integer` Options
+Option       | Usage            | Description                                 | Mutually exclusive with
+-------------|------------------|---------------------------------------------|------------------------
+`:min`       | `{:min 5}`       | Generated integer is 5 or greater           |
+`:max`       | `{:max 60}`      | Generated integer is 60 is less             |
 
 ## License
 
