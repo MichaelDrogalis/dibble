@@ -147,6 +147,28 @@ Policy         | Usage                    | Description
 `:append`      | `{:policy :append}`      | Append seeds to what is currently in the table
 `:clean-slate` | `{:policy :clean-slate}` | Delete all rows in the table before seeding
 
+## Seeding Functions
+
+### `randomized`
+
+Creates a random seed of the appropriate type. Takes option to constraint generated values.
+
+```clojure
+(randomized :column & args?)                    ;;; skeleton
+(randomized :name)                              ;;; random value for 'name' column
+(randomized :name {:min-chars 4 :max-chars 10}) ;;; generate string between 4 and 10 chars
+(randomized :name {:length 5})                  ;;; generate string of length 5
+```
+
+### `inherit`
+
+Receive a value as a result of another seeding operation. Useful for when a column is a foreign key.
+
+```clojure
+(inherited :column) ;;; skeleton
+(inherited :id)     ;;; :id will be generated as the result of another seed in another table
+```
+
 ## License
 
 Copyright © 2012 Michael Drogalis
