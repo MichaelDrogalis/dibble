@@ -20,12 +20,14 @@
   (if (= (:policy args) :clean-slate)
     (delete (:table args))))
   
-(defn seed-table [args & seeds]
-  (let [table-description (parse-description args)]
-    (apply-policies args)
-    (dotimes [_ (:n args 1)]
-      (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
-        (insert (:table args) (values data))))))
+(defn seed-table
+  ([bundled-args] (apply seed-table bundled-args))
+  ([args & seeds]
+     (let [table-description (parse-description args)]
+       (apply-policies args)
+       (dotimes [_ (:n args 1)]
+         (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
+           (insert (:table args) (values data)))))))
 
 (defn randomized
   ([column] (randomized column {}))
@@ -47,8 +49,6 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
-
 (defn inherit
   ([column] (inherit column {}))
   ([column args]
@@ -56,6 +56,8 @@
       (fn [column args seeding-args table-description]
         {column (get (:autogen seeding-args) column)})
       column args)))
+
+(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
 
 (defseed pets
   {:database db :table :pets}
@@ -68,5 +70,5 @@
   (randomized :number {:fk [pets :pid]}))
 
 (defn -main [& args]
-  (apply seed-table people))
+  (seed-table people))
 
