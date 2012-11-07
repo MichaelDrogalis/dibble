@@ -49,11 +49,6 @@ Let's seed that table:
 
 Values don't have to be totally random. Dibble offers some constraints:
 ```clojure
-(ns my.seeder
-  (:require [dibble.core :refer :all]))
-
-(def db {:vendor :mysql :db "db-name" :user "user" :password "pass"})
-
 (defseed people
   {:database db :table :people :policy :clean-slate :n 50}
   (randomized :name {:length 16})        ;;; random 16-char string
@@ -76,11 +71,6 @@ mysql> desc pets;
 Suppose the `number` column in the `people` table refers to the `pid` column of `pets`, effectively making `pid` a foreign key. Each time we generate a seed for a row in the `people` table, we want to generate a row in the `pets` table so the data makes semantic sense. Here's the code to do that:
 
 ```clojure
-(ns dibble.seeder
-  (:require [dibble.core :refer :all]))
-
-(def db {:vendor :mysql :db "db-name" :user "user" :password "pass"})
-
 (defseed pets
   {:database db :table :pets} ;;; don't specify a policy since it depends on other tables
   (inherit :pid)              ;;; :pid is given to us from another row in another table
