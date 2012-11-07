@@ -87,6 +87,16 @@ Suppose the `number` column in the `people` table refers to the `pid` column of 
 (seed-table people)
 ```
 
+## Supported Databases
+
+Database | Supported?
+-------- | ----------
+MySQL    | Yes
+Postgres | Not yet
+Oracle   | Not yet
+MSSQL    | Not yet
+SQLite   | Not yet
+
 ## License
 
 Copyright © 2012 Michael Drogalis
