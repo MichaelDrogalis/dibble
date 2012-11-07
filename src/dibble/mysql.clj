@@ -12,10 +12,10 @@
         (if (re-matches #"float" data-type)
           {(keyword column) {:type :float}})))))
 
-(def connect-to-db (memoize #(default-connection (create-db (mysql (:database %))))))  
+(def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
 (defn mysql-db [args]
-  (connect-to-db args)
+  (connect-to-db (:database args))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
