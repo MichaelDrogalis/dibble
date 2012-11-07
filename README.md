@@ -124,6 +124,17 @@ MySQL type   | Supported? | Maps to Dibble type
 `enum`       | No         | -
 `set`        | No         | -
 
+## Dibble Type Options
+
+### `:string` Options
+
+Option       | Usage            | Description                                 | Mutually exclusive with
+-------------|------------------|---------------------------------------------|------------------------
+`:min-chars` | `{:min-chars 5}` | Generated string length has a minimum of 5. |
+`:max-chars` | `{:max-chars 10` | Generated string length has a maximum of 10.|
+`:length`    | `{:length 8}`    | Genereted string is exactly 8 characters.   | `:min-chars`, `:max-chars`
+
+
 ## License
 
 Copyright © 2012 Michael Drogalis
