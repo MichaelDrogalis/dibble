@@ -5,7 +5,7 @@ Dibble is a Clojure library that intelligently, randomly seeds databases by infe
 ## Installation
 
 Available on Clojars:
-```[dibble "0.1.0-SNAPSHOT"]```
+    [dibble "0.1.0-SNAPSHOT"]
 
 ## Usage
 
@@ -33,6 +33,8 @@ Let's seed that table:
   {:database db :table :people :policy :clean-slate :n 50}
   (randomized :name)    ;;; random 32-char string
   (randomized :number)) ;;; random 32-bit integer
+
+(seed-table people)
 ```
 
 Values don't have to be totally random. Dibble offers some constraints:
@@ -46,6 +48,8 @@ Values don't have to be totally random. Dibble offers some constraints:
   {:database db :table :people :policy :clean-slate :n 50}
   (randomized :name {:length 16})        ;;; random 16-char string
   (randomized :number {:min 5 :max 10})) ;;; random integer between 5 and 10 inclusive
+
+(seed-table people)
 ```
 
 Dibble handles tables that have foreign keys. Let's introduce another table to up the complexity a smidge:
@@ -59,7 +63,7 @@ mysql> desc pets;
 +-------+-------------+------+-----+---------+-------+
 ```
 
-Suppose the `number` column in the `people` table refers to a `pid` column of `pets`, effectively making `pid` a foreign key. Each time we generate a seed for a row in the `people` table, we want to generate a row in the `pets` table so the data makes semantic sense. Here's the code to do that:
+Suppose the `number` column in the `people` table refers to the `pid` column of `pets`, effectively making `pid` a foreign key. Each time we generate a seed for a row in the `people` table, we want to generate a row in the `pets` table so the data makes semantic sense. Here's the code to do that:
 
 ```clojure
 (ns dibble.seeder
@@ -78,6 +82,8 @@ Suppose the `number` column in the `people` table refers to a `pid` column of `p
   {:database db :table :people :policy :transitive :dependents [:pets] :n 50}
   (randomized :name)
   (randomized :number {:fk [pets :pid]})) ;;; :fk specifies a vector of a table and column to place :number into
+
+(seed-table people)
 ```
 
 ## License
