@@ -20,8 +20,8 @@
         :else (throw (Throwable. "Database :vendor not supported"))))
 
 (defn apply-policies [args]
-  (if (= (:policy args) :clean-slate)
-    (delete (:table args))))
+  (cond (= (:policy args) :clean-slate) (delete (:table args))
+        (= (:policy args) :transitive) (dorun (map #(delete %) (conj (:dependents args) (:table args))))))
 
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
@@ -68,7 +68,7 @@
   (randomized :name))
 
 (defseed people
-  {:database db :table :persons :policy :clean-slate :n 50}
+  {:database db :table :persons :policy :transitive :dependents [:pets] :n 50}
   (randomized :name)
   (randomized :number {:fk [pets :pid]}))
 
