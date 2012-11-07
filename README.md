@@ -2,6 +2,15 @@
 
 Dibble is a Clojure library that intelligently, randomly seeds databases by inferencing the underlying table structure.
 
+```clojure
+(defseed people
+  {:database {:vendor :mysql :db "db-name" :user "user" :password "pass"} :table :people :n 200}
+  (randomized :name)
+  (randomized :number))
+
+(seed-table people)
+```
+
 ## Installation
 
 Available on Clojars:
@@ -27,7 +36,7 @@ Let's seed that table:
   (:require [dibble.core :refer :all]))
 
 ;;; A map that specifies the database type via :vendor and Korma connection information.
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+(def db {:vendor :mysql :db "db-name" :user "user" :password "pass"})
 
 ;;; Makes 50 different seeds, deleting all rows in the table before beginning (using :clean-slate).
 (defseed people
@@ -43,7 +52,7 @@ Values don't have to be totally random. Dibble offers some constraints:
 (ns my.seeder
   (:require [dibble.core :refer :all]))
 
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+(def db {:vendor :mysql :db "db-name" :user "user" :password "pass"})
 
 (defseed people
   {:database db :table :people :policy :clean-slate :n 50}
@@ -70,7 +79,7 @@ Suppose the `number` column in the `people` table refers to the `pid` column of 
 (ns dibble.seeder
   (:require [dibble.core :refer :all]))
 
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+(def db {:vendor :mysql :db "db-name" :user "user" :password "pass"})
 
 (defseed pets
   {:database db :table :pets} ;;; don't specify a policy since it depends on other tables
@@ -168,6 +177,10 @@ Receive a value as a result of another seeding operation. Useful for when a colu
 (inherited :column) ;;; skeleton
 (inherited :id)     ;;; :id will be generated as the result of another seed in another table
 ```
+
+## Contribute
+
+Contributions are very welcome. The above tables should show clearly what needs to be implemented. Fork and pull request.
 
 ## License
 
