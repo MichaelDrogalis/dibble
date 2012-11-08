@@ -127,11 +127,14 @@ MySQL type   | Supported? | Maps to Dibble type
 
 ### `:string` Options
 
-Option       | Usage            | Description                                 | Mutually exclusive with
--------------|------------------|---------------------------------------------|------------------------
-`:min-chars` | `{:min-chars 5}` | Generated string length has a minimum of 5  | `:length`
-`:max-chars` | `{:max-chars 10` | Generated string length has a maximum of 10 | `:length`
-`:length`    | `{:length 8}`    | Genereted string is exactly 8 characters    | `:min-chars`, `:max-chars`
+Option       | Usage                    | Description                                 | Mutually exclusive with
+-------------|--------------------------|---------------------------------------------|------------------------
+`:min-chars` | `{:min-chars 5}`         | Generated string length has a minimum of 5  | `:length`
+`:max-chars` | `{:max-chars 10`         | Generated string length has a maximum of 10 | `:length`
+`:length`    | `{:length 8}`            | Generated string is exactly 8 characters    | `:min-chars`, `:max-chars`
+`:first-name`| `{:subtype :first-name}` | Generated string is an English first name   | `:length`, `:min-chars`, `:max-chars`
+`:last-name` | `{:subtype :last-name}`  | Generated string is an English last name    | `:length`, `:min-chars`, `:max-chars`
+`:full-name` | `{:subtype :full-name}`  | Generated string is an English full name    | `:length`, `:min-chars`, `:max-chars`, `:first-name`, `:last-name`
 
 ### `:integer` Options
 Option       | Usage            | Description                                 | Mutually exclusive with
