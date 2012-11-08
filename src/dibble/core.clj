@@ -57,6 +57,8 @@
   ([column args]
      (partial
       (fn [column args seeding-args table-description]
-        {column (get (:autogen seeding-args) column)})
+        (let [result (get (:autogen seeding-args) column)]
+          (bequeath-value! args result)
+          {column result}))
       column args)))
 
