@@ -12,3 +12,9 @@
 (fact (>= (count (randomized-string column {:min 1})) 1) => true)
 (fact (>= (count (randomized-string column {:min 5})) 5) => true)
 (fact (<= (count (randomized-string column {:min 9})) 3) => false)
+
+(fact (<= (count (randomized-string column {:max 0})) 0) => true)
+(fact (<= (count (randomized-string column {:max 5})) 5) => true)
+(fact (<= (count (randomized-string column {:max 9})) 9) => true)
+
+
