@@ -6,11 +6,7 @@
   (if-let [description (re-matches #"varchar\((\d+)\)" data-type)]
     {(keyword column) {:type :string :max-chars (read-string (nth description 1))}}
     (if-let [description (re-matches #"int.*" data-type)]
-      {(keyword column) {:type :integer :bytes 4}}
-      (if-let [description (re-matches #"(double|decimal)\((\d+),(\d+)\)" data-type)]
-        {(keyword column) {:type :decimal :accuracy (read-string (nth description 2)) :precision (read-string (nth description 3))}}
-        (if (re-matches #"float" data-type)
-          {(keyword column) {:type :float}})))))
+      {(keyword column) {:type :integer :bytes 4}})))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
