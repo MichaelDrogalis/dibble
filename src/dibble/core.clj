@@ -34,10 +34,12 @@
 
 (defn bequeath-value! [args data]
   (if (:fk args)
-    (do
-      (let [[foreign-table foreign-column] (:fk args)]
+    (dorun
+     (map
+      (fn [[foreign-table foreign-column]]
         (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
-                                  (rest foreign-table)))))))
+                                  (rest foreign-table))))
+      (:fk args)))))
 
 (defn randomized
   ([column] (randomized column {}))
