@@ -66,6 +66,6 @@
 
 (defseed people
   {:database db :table :persons :policy :clean-slate :n 5}
-  (randomized :name {:subtype :first-name}))
+  (randomized :name {:subtype :full-name}))
 
 (seed-table people)
