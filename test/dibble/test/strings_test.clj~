@@ -1,0 +1,3 @@
+(ns dibble.test.strings-test
+  (:require [midje.sweet :refer :all]))
+
