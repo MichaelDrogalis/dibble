@@ -62,3 +62,10 @@
           {column result}))
       column args)))
 
+(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+
+(defseed people
+  {:database db :table :persons :policy :clean-slate :n 5}
+  (randomized :name {:subtype :first-name}))
+
+(seed-table people)
