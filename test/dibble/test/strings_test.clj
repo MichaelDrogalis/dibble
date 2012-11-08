@@ -17,4 +17,9 @@
 (fact (<= (count (randomized-string column {:max 5})) 5) => true)
 (fact (<= (count (randomized-string column {:max 9})) 9) => true)
 
+(defn space? [char]
+  (= char \space))
 
+(fact (not-any? space?  (randomized-string column {:subtype :first-name})) => true)
+(fact (not-any? space? (randomized-string column {:subtype :last-name})) => true)
+(fact (count (filter space? (randomized-string column {:subtype :full-name}))) => 1)
