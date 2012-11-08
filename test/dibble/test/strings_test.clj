@@ -17,6 +17,12 @@
 (fact (<= (count (randomized-string column {:max 5})) 5) => true)
 (fact (<= (count (randomized-string column {:max 9})) 9) => true)
 
+(fact
+ (let [chars (randomized-string column {:min 5 :max 7})]
+   (and (<= (count chars) 7)
+        (>= (count chars) 5))
+   => true))
+
 (defn space? [char]
   (= char \space))
 
