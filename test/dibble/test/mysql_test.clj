@@ -10,3 +10,4 @@
 (fact (mysql-to-clj-type [:age "int"]) => {:age {:type :integer :bytes 4}})
 (fact (mysql-to-clj-type [:age "int(5)"]) => {:age {:type :integer :bytes 4}})
 (fact (mysql-to-clj-type [:age "int(11)"]) => {:age {:type :integer :bytes 4}})
+

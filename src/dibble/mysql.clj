@@ -2,11 +2,28 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
+(def varchar-regex #"varchar\((\d+)\)")
+(def integer-regex #"int.*")
+
+(defn varchar-metadata [column description]
+  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+
+(defn integer-metadata [column description]
+  {(keyword column) {:type :integer :bytes 4}})  
+
+(defn match-to-type [column data-type]
+  (first
+   (filter
+    identity
+    (map
+     (fn [[regex metadata-fn]]
+       (if-let [description (re-matches regex data-type)]
+         (metadata-fn column description)))
+     [[varchar-regex varchar-metadata]
+      [integer-regex integer-metadata]]))))  
+
 (defn mysql-to-clj-type [[column data-type]]
-  (if-let [description (re-matches #"varchar\((\d+)\)" data-type)]
-    {(keyword column) {:type :string :max-chars (read-string (nth description 1))}}
-    (if-let [description (re-matches #"int.*" data-type)]
-      {(keyword column) {:type :integer :bytes 4}})))
+  (match-to-type column data-type))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
