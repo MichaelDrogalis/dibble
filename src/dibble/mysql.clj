@@ -11,7 +11,7 @@
 (defn integer-metadata [column description]
   {(keyword column) {:type :integer :bytes 4}})  
 
-(defn match-to-type [column data-type]
+(defn mysql-to-clj-type [[column data-type]]
   (first
    (filter
     identity
@@ -20,10 +20,7 @@
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
      [[varchar-regex varchar-metadata]
-      [integer-regex integer-metadata]]))))  
-
-(defn mysql-to-clj-type [[column data-type]]
-  (match-to-type column data-type))
+      [integer-regex integer-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
