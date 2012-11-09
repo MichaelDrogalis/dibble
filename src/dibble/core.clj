@@ -19,9 +19,12 @@
   (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
         :else (throw (Throwable. "Database :vendor not supported"))))
 
+(defn clean-table [table]
+  (delete table))
+
 (defn apply-policies [args]
-  (cond (= (:policy args) :clean-slate) (delete (:table args))
-        (= (:policy args) :transitive) (dorun (map #(delete %) (conj (:dependents args) (:table args))))))
+  (let [tables (concat [(:table args)] (:dependents args))]
+    (cond (= (:policy args) :clean-slate) (dorun (map clean-table tables)))))
 
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
