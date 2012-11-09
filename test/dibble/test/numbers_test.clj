@@ -11,17 +11,27 @@
 (fact (let [n (random-integer -10 -5)]
         (and (<= n -5) (>= n -10)) => true))
 
-(def column {:type :integer :bytes 4})
+(def integer-column {:type :integer :bytes 4})
 
-(fact (>= (randomized-integer column {:min 0}) 0) => true)
-(fact (>= (randomized-integer column {:min 5}) 5) => true)
+(fact (>= (randomized-integer integer-column {:min 0}) 0) => true)
+(fact (>= (randomized-integer integer-column {:min 5}) 5) => true)
 
-(fact (<= (randomized-integer column {:max 0}) 0) => true)
-(fact (<= (randomized-integer column {:max 5}) 5) => true)
+(fact (<= (randomized-integer integer-column {:max 0}) 0) => true)
+(fact (<= (randomized-integer integer-column {:max 5}) 5) => true)
 
 (fact
- (let [n (randomized-integer column {:min 5 :max 6})]
+ (let [n (randomized-integer integer-column {:min 5 :max 6})]
    (and (<= n 6) (>= n 5))) => true)
 
-(fact (randomized-integer column {:min 5 :max 5}) => 5)
+(fact (randomized-integer integer-column {:min 5 :max 5}) => 5)
 
+(def double-column {:type :double})
+
+(fact (float? (randomized-double double-column {})) => true)
+
+(fact (>= (randomized-double double-column {:min 3.14}) 3.14) => true)
+(fact (<= (randomized-double double-column {:max 3.14}) 3.14) => true)
+
+(fact
+ (let [n (randomized-double double-column {:min 1.23 :max 2.01})]
+   (and (>= n 1.23) (<= n 2.01))) => true)
