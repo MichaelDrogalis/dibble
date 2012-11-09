@@ -52,7 +52,8 @@
         (let [constraints (get table-description column)
               data-type (:type constraints)
               result (cond (= data-type :string) (randomized-string constraints args)
-                           (= data-type :integer) (randomized-integer constraints args))]
+                           (= data-type :integer) (randomized-integer constraints args)
+                           (= data-type :decimal) (randomized-double constraints args))]
           (bequeath-value! args result)
           {column result}))
       column args)))
@@ -66,4 +67,22 @@
           (bequeath-value! args result)
           {column result}))
       column args)))
+
+(defn value-of
+  ([column value]
+     (partial
+      (fn [column value seeding-args table-description]
+        {column value})
+      column value)))
+
+(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+
+(defseed people
+  {:database db :table :persons :policy :clean-slate :n 5}
+  (randomized :name {:min 3 :max 8})
+  (randomized :about {:min 5 :max 15})
+  (randomized :number)
+  (randomized :salt {:min 5.0 :max 8.75}))
+
+(seed-table people)
 
