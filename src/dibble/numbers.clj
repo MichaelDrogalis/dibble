@@ -19,3 +19,7 @@
         (and (not (nil? min)) (nil? max)) (random-double min Double/MAX_VALUE)
         (and (nil? min) (not (nil? max))) (random-double Double/MIN_VALUE max)
         :else (random-double Double/MIN_VALUE Double/MAX_VALUE)))
+
+(defn randomized-float [column args]
+  (/ (randomized-double column (merge {:min Integer/MIN_VALUE :max Integer/MAX_VALUE} args)) 100))
+

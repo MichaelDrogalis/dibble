@@ -53,7 +53,8 @@
               data-type (:type constraints)
               result (cond (= data-type :string) (randomized-string constraints args)
                            (= data-type :integer) (randomized-integer constraints args)
-                           (= data-type :decimal) (randomized-double constraints args))]
+                           (= data-type :decimal) (randomized-double constraints args)
+                           (= data-type :float) (randomized-float constraints args))]
           (bequeath-value! args result)
           {column result}))
       column args)))
@@ -82,6 +83,7 @@
   (randomized :name {:min 3 :max 8})
   (randomized :about {:min 5 :max 15})
   (randomized :number)
+  (randomized :secret)
   (randomized :salt {:min 5.0 :max 8.75}))
 
 (seed-table people)
