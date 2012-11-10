@@ -80,3 +80,26 @@
         {column value})
       column value args)))
 
+(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
+
+(defseed rooms
+  {:database db :table :rooms :policy :clean-slate}
+  (value-of :name "Mike's room"))
+
+(defseed pets
+  {:database db :table :pets}
+  (inherit :pid)
+  (randomized :name {:subtype :first-name}))
+
+(defseed people
+  {:database db :table :persons :policy :clean-slate :dependents [:pets] :n 5}
+  (randomized :name {:subtype :full-name})
+  (randomized :number {:min 50 :max 100 :fk {pets :pid}})
+  (randomized :money {:min 0.00 :max 100000.00})
+  (randomized :about {:min 5 :max 10})
+  (randomized :salt)
+  (randomized :secret))
+
+(seed-table rooms)
+(seed-table people)
+
