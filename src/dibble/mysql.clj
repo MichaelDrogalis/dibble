@@ -4,8 +4,8 @@
 
 (def varchar-regex #"varchar\((\d+)\)")
 (def integer-regex #"int.*")
-(def decimal-regex #"(double|decimal).*")
-(def float-regex #"float.*")
+(def decimal-regex #"double.*")
+(def float-regex #"(float|decimal).*")
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})

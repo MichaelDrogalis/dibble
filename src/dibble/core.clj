@@ -84,6 +84,7 @@
   (randomized :about {:min 5 :max 15})
   (randomized :number)
   (randomized :secret)
+  (randomized :money)
   (randomized :salt {:min 5.0 :max 8.75}))
 
 (seed-table people)
