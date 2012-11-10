@@ -160,7 +160,7 @@ Creates a random seed of the appropriate type. Takes option to constraint genera
 ```clojure
 (randomized :column & args?)                    ;;; skeleton
 (randomized :name)                              ;;; random value for 'name' column
-(randomized :name {:min-chars 4 :max-chars 10}) ;;; generate string between 4 and 10 chars
+(randomized :name {:min 4 :max 10}) ;;; generate string between 4 and 10 chars
 (randomized :name {:length 5})                  ;;; generate string of length 5
 ```
 
