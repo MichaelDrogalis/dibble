@@ -1,10 +1,11 @@
 body {
-    background-color: #ACB;
+    background-color: #ACBFFF;
 }
 
 .tag-line {
     margin-top: 15px;
     font-style: italic;
+    padding-left: 25px;
 }
 
 .hero-adjustments {
