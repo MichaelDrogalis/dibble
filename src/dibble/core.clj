@@ -72,27 +72,11 @@
       column args)))
 
 (defn value-of
-  ([column value]
+  ([column] (value-of column {} {}))
+  ([column value args]
      (partial
-      (fn [column value seeding-args table-description]
+      (fn [column value args seeding-args table-description]
+        (bequeath-value! args value)
         {column value})
-      column value)))
-
-(def db {:vendor :mysql :db "simulation" :user "root" :password ""})
-
-(defseed pets
-  {:database db :table :pets}
-  (inherit :pid)
-  (randomized :name {:subtype :first-name}))
-
-(defseed people
-  {:database db :table :persons :policy :clean-slate :dependents [:pets] :n 5}
-  (randomized :name {:min 3 :max 8})
-  (randomized :about {:min 5 :max 15})
-  (randomized :number {:fk {pets :pid}})
-  (randomized :secret)
-  (randomized :money)
-  (randomized :salt {:min 5.0 :max 8.75}))
-
-(seed-table people)
+      column value args)))
 
