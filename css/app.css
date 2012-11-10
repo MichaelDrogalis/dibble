@@ -1,0 +1,44 @@
+body {
+    background-color: #ACB;
+}
+
+.tag-line {
+    margin-top: 15px;
+    font-style: italic;
+}
+
+.hero-adjustments {
+    margin-top: 30px;
+    padding: 30px 0 30px 0;
+}
+
+.links {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.link {
+    font-size: 26px;
+    padding: 0 10px 0 10px;
+}
+
+.tag-title {
+    text-align: center;
+}
+
+pre {
+    background-color: transparent;
+    border: transparent;
+}
+
+.seed-code {
+    padding-left: 8px;
+}
+
+.dibble-code {
+    padding-left: 30px;
+}
+
+.result-set {
+    padding-left: 35px;
+}

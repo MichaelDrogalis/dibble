@@ -1,141 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Dibble by MichaelDrogalis</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <title>Dibble</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/app.css" rel="stylesheet" media="screen"> 
+    <link rel="stylesheet" href="css/default.css">
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/MichaelDrogalis/dibble">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/MichaelDrogalis/dibble/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/MichaelDrogalis/dibble/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
-          <h1>Dibble</h1>
-          <p>A Clojure library for seeding databases.</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/MichaelDrogalis">MichaelDrogalis</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+    <div class="container">
+        <div class="hero-unit hero-adjustments">
+          <div class="row">
+            <div class="span4 offset1">
+                <h1>Dibble</h1>
+            </div>
+            
+            <div class="span6 links">
+                <a href="#" class="link">Docs</a>
+                <a href="https://github.com/MichaelDrogalis/dibble" class="link">Source</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span4 offset1">
+                <p class="tag-line">Easy database seeding in Clojure</p>
+            </div>
+          </div>
+      </div>
+      
+      <div class="row">
+        <div class="span3">
+            <h2 class="tag-title">Ready</h2>
+            <pre>
+                <code class="seed-code">
+mysql> describe people;
++--------+---------------+
+| Field  | Type          |
++--------+---------------+
+| name   | varchar(32)   |
+| number | int(11)       |
++--------+---------------+
+                </code>
+            </pre>
         </div>
+        <div class="span5">
+            <h2 class="tag-title">Set</h2>
+            
+            <pre>
+                <code class="dibble-code">
+(def db {:vendor :mysql :db "db-name"
+         :user "user" :password "pass"})
 
-        <h1>dibble</h1>
+(defseed people
+  {:database db :table :people :n 5}
+  (randomized :name {:subtype :full-name})
+  (randomized :number {:min 50 :max 100}))
 
-<p>Dibble is a Clojure library that intelligently, randomly seeds databases by inferencing the underlying table structure.</p>
-
-<h2>Installation</h2>
-
-<p>Available on Clojars:</p>
-
-<pre><code>[dibble "0.1.0-SNAPSHOT"]
-</code></pre>
-
-<h2>Usage</h2>
-
-<p>A few complete examples follow. Starting with the simplest case, suppose we have a MySQL table named <code>people</code>:</p>
-
-<div class="highlight"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">desc</span> <span class="n">people</span><span class="p">;</span>
-<span class="o">+</span><span class="c1">--------+---------------+------+-----+---------+-------+</span>
-<span class="o">|</span> <span class="n">Field</span>  <span class="o">|</span> <span class="k">Type</span>          <span class="o">|</span> <span class="k">Null</span> <span class="o">|</span> <span class="k">Key</span> <span class="o">|</span> <span class="k">Default</span> <span class="o">|</span> <span class="n">Extra</span> <span class="o">|</span>
-<span class="o">+</span><span class="c1">--------+---------------+------+-----+---------+-------+</span>
-<span class="o">|</span> <span class="n">name</span>   <span class="o">|</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>   <span class="o">|</span> <span class="n">YES</span>  <span class="o">|</span>     <span class="o">|</span> <span class="k">NULL</span>    <span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span> <span class="nb">number</span> <span class="o">|</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>       <span class="o">|</span> <span class="n">YES</span>  <span class="o">|</span>     <span class="o">|</span> <span class="k">NULL</span>    <span class="o">|</span>       <span class="o">|</span>
-<span class="o">+</span><span class="c1">--------+---------------+------+-----+---------+-------+</span>
-</pre></div>
-
-<p>Let's seed that table:</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">my.seeder</span>
-  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">dibble.core</span> <span class="ss">:refer</span> <span class="ss">:all</span><span class="p">]))</span>
-
-<span class="c1">;;; A map that specifies the database type via :vendor and Korma connection information.</span>
-<span class="p">(</span><span class="k">def </span><span class="nv">db</span> <span class="p">{</span><span class="ss">:vendor</span> <span class="ss">:mysql</span> <span class="ss">:db</span> <span class="s">"simulation"</span> <span class="ss">:user</span> <span class="s">"root"</span> <span class="ss">:password</span> <span class="s">""</span><span class="p">})</span>
-
-<span class="c1">;;; Makes 50 different seeds, deleting all rows in the table before beginning (using :clean-slate).</span>
-<span class="p">(</span><span class="nf">defseed</span> <span class="nv">people</span>
-  <span class="p">{</span><span class="ss">:database</span> <span class="nv">db</span> <span class="ss">:table</span> <span class="ss">:people</span> <span class="ss">:policy</span> <span class="ss">:clean-slate</span> <span class="ss">:n</span> <span class="mi">50</span><span class="p">}</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:name</span><span class="p">)</span>    <span class="c1">;;; random 32-char string</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:number</span><span class="p">))</span> <span class="c1">;;; random 32-bit integer</span>
-
-<span class="p">(</span><span class="nf">seed-table</span> <span class="nv">people</span><span class="p">)</span>
-</pre></div>
-
-<p>Values don't have to be totally random. Dibble offers some constraints:</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">my.seeder</span>
-  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">dibble.core</span> <span class="ss">:refer</span> <span class="ss">:all</span><span class="p">]))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">db</span> <span class="p">{</span><span class="ss">:vendor</span> <span class="ss">:mysql</span> <span class="ss">:db</span> <span class="s">"simulation"</span> <span class="ss">:user</span> <span class="s">"root"</span> <span class="ss">:password</span> <span class="s">""</span><span class="p">})</span>
-
-<span class="p">(</span><span class="nf">defseed</span> <span class="nv">people</span>
-  <span class="p">{</span><span class="ss">:database</span> <span class="nv">db</span> <span class="ss">:table</span> <span class="ss">:people</span> <span class="ss">:policy</span> <span class="ss">:clean-slate</span> <span class="ss">:n</span> <span class="mi">50</span><span class="p">}</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:name</span> <span class="p">{</span><span class="ss">:length</span> <span class="mi">16</span><span class="p">})</span>        <span class="c1">;;; random 16-char string</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:number</span> <span class="p">{</span><span class="ss">:min</span> <span class="mi">5</span> <span class="ss">:max</span> <span class="mi">10</span><span class="p">}))</span> <span class="c1">;;; random integer between 5 and 10 inclusive</span>
-
-<span class="p">(</span><span class="nf">seed-table</span> <span class="nv">people</span><span class="p">)</span>
-</pre></div>
-
-<p>Dibble handles tables that have foreign keys. Let's introduce another table to up the complexity a smidge:</p>
-
-<div class="highlight"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">desc</span> <span class="n">pets</span><span class="p">;</span>
-<span class="o">+</span><span class="c1">-------+-------------+------+-----+---------+-------+</span>
-<span class="o">|</span> <span class="n">Field</span> <span class="o">|</span> <span class="k">Type</span>        <span class="o">|</span> <span class="k">Null</span> <span class="o">|</span> <span class="k">Key</span> <span class="o">|</span> <span class="k">Default</span> <span class="o">|</span> <span class="n">Extra</span> <span class="o">|</span>
-<span class="o">+</span><span class="c1">-------+-------------+------+-----+---------+-------+</span>
-<span class="o">|</span> <span class="n">pid</span>   <span class="o">|</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="o">|</span> <span class="n">YES</span>  <span class="o">|</span>     <span class="o">|</span> <span class="k">NULL</span>    <span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span> <span class="n">name</span>  <span class="o">|</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="o">|</span> <span class="n">YES</span>  <span class="o">|</span>     <span class="o">|</span> <span class="k">NULL</span>    <span class="o">|</span>       <span class="o">|</span>
-<span class="o">+</span><span class="c1">-------+-------------+------+-----+---------+-------+</span>
-</pre></div>
-
-<p>Suppose the <code>number</code> column in the <code>people</code> table refers to the <code>pid</code> column of <code>pets</code>, effectively making <code>pid</code> a foreign key. Each time we generate a seed for a row in the <code>people</code> table, we want to generate a row in the <code>pets</code> table so the data makes semantic sense. Here's the code to do that:</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">dibble.seeder</span>
-  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">dibble.core</span> <span class="ss">:refer</span> <span class="ss">:all</span><span class="p">]))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">db</span> <span class="p">{</span><span class="ss">:vendor</span> <span class="ss">:mysql</span> <span class="ss">:db</span> <span class="s">"simulation"</span> <span class="ss">:user</span> <span class="s">"root"</span> <span class="ss">:password</span> <span class="s">""</span><span class="p">})</span>
-
-<span class="p">(</span><span class="nf">defseed</span> <span class="nv">pets</span>
-  <span class="p">{</span><span class="ss">:database</span> <span class="nv">db</span> <span class="ss">:table</span> <span class="ss">:pets</span><span class="p">}</span> <span class="c1">;;; don't specify a policy since it depends on other tables</span>
-  <span class="p">(</span><span class="nf">inherit</span> <span class="ss">:pid</span><span class="p">)</span>              <span class="c1">;;; :pid is given to us from another row in another table</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:name</span><span class="p">))</span>
-
-<span class="c1">;;; Policy :transitive specifies deleting all rows in all tables of the :dependents sequence</span>
-<span class="c1">;;; before seeding.</span>
-<span class="p">(</span><span class="nf">defseed</span> <span class="nv">people</span>
-  <span class="p">{</span><span class="ss">:database</span> <span class="nv">db</span> <span class="ss">:table</span> <span class="ss">:people</span> <span class="ss">:policy</span> <span class="ss">:transitive</span> <span class="ss">:dependents</span> <span class="p">[</span><span class="ss">:pets</span><span class="p">]</span> <span class="ss">:n</span> <span class="mi">50</span><span class="p">}</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:name</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">randomized</span> <span class="ss">:number</span> <span class="p">{</span><span class="ss">:fk</span> <span class="p">[</span><span class="nv">pets</span> <span class="ss">:pid</span><span class="p">]}))</span> <span class="c1">;;; :fk specifies a vector of a table and column to place :number into</span>
-
-<span class="p">(</span><span class="nf">seed-table</span> <span class="nv">people</span><span class="p">)</span>
-</pre></div>
-
-<h2>License</h2>
-
-<p>Copyright © 2012 Michael Drogalis</p>
-
-<p>Distributed under the Eclipse Public License, the same as Clojure.</p>
-      </section>
-
+(seed-table people)
+                </code>
+            </pre>
+        </div>
+        <div class="span4">
+            <h2 class="tag-title">Seed</h2>
+            <pre>
+                <code class="result-set">
+mysql> select * from persons;
++---------------+--------+
+| name          | number |
++---------------+--------+
+| Colin Merrill |     80 |
+| Susan Joyce   |     76 |
+| Saul Kaufman  |     81 |
+| Frank Reeves  |     70 |
+| Adolfo Hanson |     65 |        
++---------------+--------+
+                </code>
+            </pre>
+        </div>
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
   </body>
 </html>
