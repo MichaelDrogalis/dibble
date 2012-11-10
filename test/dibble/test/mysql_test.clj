@@ -14,8 +14,8 @@
 (fact (mysql-to-clj-type [:balance "double"]) => {:balance {:type :decimal}})
 (fact (mysql-to-clj-type [:balance "double(5, 4)"]) => {:balance {:type :decimal}})
 
-(fact (mysql-to-clj-type [:balance "float"]) => {:balance {:type :float}})
-(fact (mysql-to-clj-type [:balance "decimal"]) => {:balance {:type :float}})
+(fact (mysql-to-clj-type [:balance "float"]) => {:balance {:type :decimal}})
+(fact (mysql-to-clj-type [:balance "decimal"]) => {:balance {:type :decimal}})
 
-(fact (mysql-to-clj-type [:balance "float(5, 2)"]) => {:balance {:type :float}})
-(fact (mysql-to-clj-type [:balance "decimal(8, 3)"]) => {:balance {:type :float}})
+(fact (mysql-to-clj-type [:balance "float(5, 2)"]) => {:balance {:type :decimal}})
+(fact (mysql-to-clj-type [:balance "decimal(8, 3)"]) => {:balance {:type :decimal}})

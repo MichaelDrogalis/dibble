@@ -47,8 +47,7 @@
   (let [data-type (:type constraints)]
     (cond (= data-type :string) (randomized-string constraints args)
           (= data-type :integer) (randomized-integer constraints args)
-          (= data-type :decimal) (randomized-double constraints args)
-          (= data-type :float) (randomized-float constraints args))))
+          (= data-type :decimal) (randomized-double constraints args))))
   
 (defn randomized
   ([column] (randomized column {}))
@@ -73,6 +72,7 @@
 
 (defn value-of
   ([column] (value-of column {} {}))
+  ([column value] (value-of column value {}))
   ([column value args]
      (partial
       (fn [column value args seeding-args table-description]

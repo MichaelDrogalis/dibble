@@ -4,8 +4,7 @@
 
 (def varchar-regex #"varchar\((\d+)\)")
 (def integer-regex #"int.*")
-(def decimal-regex #"double.*")
-(def float-regex #"(float|decimal).*")
+(def decimal-regex #"(float|double|decimal).*")
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -15,9 +14,6 @@
 
 (defn decimal-metadata [column description]
   {(keyword column) {:type :decimal}})
-
-(defn float-metadata [column description]
-  {(keyword column) {:type :float}})
 
 (defn mysql-to-clj-type [[column data-type]]
   (first
@@ -29,8 +25,7 @@
          (metadata-fn column description)))
      [[varchar-regex varchar-metadata]
       [integer-regex integer-metadata]
-      [decimal-regex decimal-metadata]
-      [float-regex float-metadata]]))))
+      [decimal-regex decimal-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
