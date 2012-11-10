@@ -2,15 +2,30 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
+(def varchar-regex #"varchar\((\d+)\)")
+(def integer-regex #"int.*")
+(def decimal-regex #"(float|double|decimal).*")
+
+(defn varchar-metadata [column description]
+  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+
+(defn integer-metadata [column description]
+  {(keyword column) {:type :integer :bytes 4}})
+
+(defn decimal-metadata [column description]
+  {(keyword column) {:type :decimal}})
+
 (defn mysql-to-clj-type [[column data-type]]
-  (if-let [description (re-matches #"varchar\((\d+)\)" data-type)]
-    {(keyword column) {:type :string :max-chars (read-string (nth description 1))}}
-    (if-let [description (re-matches #"int.*" data-type)]
-      {(keyword column) {:type :integer :bytes 4}}
-      (if-let [description (re-matches #"(double|decimal)\((\d+),(\d+)\)" data-type)]
-        {(keyword column) {:type :decimal :accuracy (read-string (nth description 2)) :precision (read-string (nth description 3))}}
-        (if (re-matches #"float" data-type)
-          {(keyword column) {:type :float}})))))
+  (first
+   (filter
+    identity
+    (map
+     (fn [[regex metadata-fn]]
+       (if-let [description (re-matches regex data-type)]
+         (metadata-fn column description)))
+     [[varchar-regex varchar-metadata]
+      [integer-regex integer-metadata]
+      [decimal-regex decimal-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 

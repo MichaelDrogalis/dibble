@@ -15,7 +15,7 @@ Dibble is a Clojure library that intelligently, randomly seeds databases by infe
 
 Available on Clojars:
 
-    [dibble "0.1.0-SNAPSHOT"]
+    [dibble "0.1.1-SNAPSHOT"]
 
 ## Usage
 
@@ -76,12 +76,13 @@ Suppose the `number` column in the `people` table refers to the `pid` column of 
   (inherit :pid)              ;;; :pid is given to us from another row in another table
   (randomized :name))
 
-;;; Policy :transitive specifies deleting all rows in all tables of the :dependents sequence
-;;; before seeding.
+;;; :dependents takes a vector that specifies other
+;;; tables to apply :policy to before seeding.
 (defseed people
   {:database db :table :people :policy :transitive :dependents [:pets] :n 50}
   (randomized :name)
-  (randomized :number {:fk [pets :pid]})) ;;; :fk specifies a vector of a table and column to place :number into
+  (randomized :number {:fk {pets :pid}})) ;;; :fk specifies a map
+                                          ;;; of tables to columns to place :number into
 
 (seed-table people)
 ```
@@ -110,9 +111,9 @@ MySQL type   | Supported? | Maps to Dibble type
 `smallint`   | No         | `:integer`
 `mediumint`  | No         | `:integer`
 `bigint`     | No         | `:integer`
-`float`      | No         | `:decimal`
-`double`     | No         | `:decimal`
-`decimal`    | No         | `:decimal`
+`float`      | Yes        | `:decimal`
+`double`     | Yes        | `:decimal`
+`decimal`    | Yes        | `:decimal`
 `date`       | No         | ?
 `datetime`   | No         | ?
 `timestamp`  | No         | ?
@@ -129,18 +130,18 @@ MySQL type   | Supported? | Maps to Dibble type
 
 Option       | Usage                    | Description                                 | Mutually exclusive with
 -------------|--------------------------|---------------------------------------------|------------------------
-`:min-chars` | `{:min-chars 5}`         | Generated string length has a minimum of 5  | `:length`
-`:max-chars` | `{:max-chars 10`         | Generated string length has a maximum of 10 | `:length`
-`:length`    | `{:length 8}`            | Generated string is exactly 8 characters    | `:min-chars`, `:max-chars`
-`:first-name`| `{:subtype :first-name}` | Generated string is an English first name   | `:length`, `:min-chars`, `:max-chars`
-`:last-name` | `{:subtype :last-name}`  | Generated string is an English last name    | `:length`, `:min-chars`, `:max-chars`
-`:full-name` | `{:subtype :full-name}`  | Generated string is an English full name    | `:length`, `:min-chars`, `:max-chars`, `:first-name`, `:last-name`
+`:min`       | `{:min 5}`               | Generated string length has a minimum of 5  | `:length`
+`:max`       | `{:max 10}`              | Generated string length has a maximum of 10 | `:length`
+`:length`    | `{:length 8}`            | Generated string is exactly 8 characters    | `:min`, `:max`
+`:first-name`| `{:subtype :first-name}` | Generated string is an English first name   | `:length`, `:min`, `:max`
+`:last-name` | `{:subtype :last-name}`  | Generated string is an English last name    | `:length`, `:min`, `:max`
+`:full-name` | `{:subtype :full-name}`  | Generated string is an English full name    | `:length`, `:min`, `:max`, `:first-name`, `:last-name`
 
-### `:integer` Options
+### `:integer` & `:decimal` Options
 Option       | Usage            | Description                                 | Mutually exclusive with
 -------------|------------------|---------------------------------------------|------------------------
 `:min`       | `{:min 5}`       | Generated integer is 5 or greater           |
-`:max`       | `{:max 60}`      | Generated integer is 60 is less             |
+`:max`       | `{:max 60.5}`    | Generated double is 60.5 or less            |
 
 ## Dibble Policies
 
@@ -148,6 +149,7 @@ Policy         | Usage                    | Description
 -------------- | ------------------------ | -----------
 `:append`      | `{:policy :append}`      | Append seeds to what is currently in the table
 `:clean-slate` | `{:policy :clean-slate}` | Delete all rows in the table before seeding
+`:dependents`  | `{:dependents [:table1]` | Apply :policy to all tables in `:dependents`
 
 ## Seeding Functions
 
@@ -169,6 +171,14 @@ Receive a value as a result of another seeding operation. Useful for when a colu
 ```clojure
 (inherit :column) ;;; skeleton
 (inherit :id)     ;;; :id will be generated as the result of another seed in another table
+```
+
+### `value-of`
+
+Use the value specified for seeding
+
+```clojure
+(value-of :name "Mike")
 ```
 
 ## Contribute
