@@ -57,6 +57,11 @@ Values don't have to be totally random. Dibble offers some constraints:
 
 (seed-table people)
 ```
+
+## Design
+
+![Design](http://i48.tinypic.com/2nbampd.png)
+
 ## Contribute
 
 Contributions are most welcome. There's a ton of work to do, and it's fairly easy to contribute.
