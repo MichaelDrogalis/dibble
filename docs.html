@@ -234,6 +234,68 @@
                             <td>An English full name. String, space, string.</td>
                             <td><code>:length, :min, :max</code></td>
                         </tr>
+                        <tr class="error">
+                            <td><code>:spaces?</code></td>
+                            <td><code>{:spaces? true}</code></td>
+                            <td>String may contain spaces</td>
+                            <td>Not yet implemented</td>
+                        </tr>
+                        <tr class="error">
+                            <td><code>:symbols?</code></td>
+                            <td><code>{:symbols? true}</code></td>
+                            <td>String may contain symbols</td>
+                            <td>Not yet implemented</td>
+                        </tr>
+                        <tr class="error">
+                            <td><code>:digits?</code></td>
+                            <td><code>{:digits? true}</code></td>
+                            <td>String may contain digits</td>
+                            <td>Not yet implemented</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="span9">
+                    <h2>Integer & Decimal options</h2>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Option</td>
+                            <td>Usage</td>
+                            <td>Description</td>
+                            <td>Mutual exclusion</td>
+                        </tr>
+                        <tr>
+                            <td><code>:min</code></td>
+                            <td><code>{:min 20}</code></td>
+                            <td>Minimum value of 20, inclusive</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><code>:max</code></td>
+                            <td><code>{:max 80}</code></td>
+                            <td>Maximum value of 80, inclusive</td>
+                            <td></td>
+                        </tr>
+                        <tr class="error">
+                            <td><code>:even?</code></td>
+                            <td><code>{:even? true}</code></td>
+                            <td>Generated number is even</td>
+                            <td>Not yet implemented</td>
+                        </tr>
+                        <tr class="error">
+                            <td><code>:odd?</code></td>
+                            <td><code>{:odd? true}</code></td>
+                            <td>Generated number is odd</td>
+                            <td>Not yet implemented</td>
+                        </tr>
+                        <tr class="error">
+                            <td><code>:prime?</code></td>
+                            <td><code>{:prime? true}</code></td>
+                            <td>Generated number is prime</td>
+                            <td>Not yet implemented</td>
+                        </tr>
                     </table>
                 </div>
             </div>
