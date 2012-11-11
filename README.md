@@ -60,7 +60,15 @@ Values don't have to be totally random. Dibble offers some constraints:
 
 ## Contribute
 
-Contributions are very welcome. The above tables should show clearly what needs to be implemented. Fork and pull request.
+Contributions are most welcome. There's a ton of work to do, and it's fairly easy to contribute.
+Here's some things I'd like to have that aren't done:
+
+- Completion of MySQL datatype support (See the docs for what's not done)
+- Postgres support
+- More string options (subtypes of email address, random US state, etc)
+- More numeric options (prime?, symbols?, spaces? etc)
+- More faithful decimal implementations. Default decimal types don't generate within the full range of possible values
+- Possibly rewrite the docs to be a little clearer?
 
 ## License
 
