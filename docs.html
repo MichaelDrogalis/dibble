@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dibble</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/app.css" rel="stylesheet" media="screen"> 
+    <link rel="stylesheet" href="css/rainbow.css">
+  </head>
+  <body>
+    <div class="container">
+        <div class="hero-unit hero-adjustments">
+          <div class="row">
+            <div class="span4 offset1">
+                <h1 class="dibble-title">Dibble</h1>
+            </div>
+            
+            <div class="span6 links">
+                <a href="docs.html" class="link">Docs</a>
+                <a href="https://github.com/MichaelDrogalis/dibble" class="link">Source</a>
+            </div>
+          </div>
+          <div class="row">
+          
+            <div class="span5 offset1">
+                <p class="tag-line">Inferential database seeding in Clojure</p>
+            </div>
+          </div>
+      </div>
+      
+      <div class="row">
+        <div class="span2">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Browse</li>
+              <li><a href="#start">start</a></li>
+              <li><a href="#values">value-of</a></li>
+              <li><a href="#random">randomize</a></li>
+              <li><a href="#fk  ">inherit</a></li>
+              <li><a href="#">options</a></li>
+              <li><a href="#">policies</a></li>
+              <li><a href="#">support</a></li>
+            </ul>
+          </div><!--/.well --> 
+        </div>
+        
+        <div class="span10">
+            <div class="row" id="start">
+            <div class="span9 well">
+            <h1>Getting Started</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defproject ...
+  :dependencies [[dibble.core "0.1.1"]]
+  ...)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    First off, put the dependency in your project file to download from Clojars.
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(def db {:vendor :mysql
+         :db "db-name"
+         :user "user"
+         :password "pass"})
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    Next, in your Clojure source file, specify a valid connection. Connection's are obtained through <a href="http://sqlkorma.com">Korma</a>, so use that syntax. Don't forget to specify the <code>:vendor</code>!
+                </div>
+            </div>
+            </div>
+            </div>
+            
+            <div class="row" id="values">
+            <div class="span9 well">
+            <h1>Values</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defseed people
+  {:database db :table :people}
+  (value-of :name "Mike")
+  (value-of :age 21))
+
+(seed-table people)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    <code>value-of</code> is a function that takes a column name and a value to insert into the row.
+                    This is useful is you know the concrete data you want to seed with, which is often the case.
+                </div>
+            </div>
+            </div>
+            </div>
+            
+            
+            <div class="row" id="random">
+            <div class="span9 well">
+            <h1>Randomness</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defseed people
+  {:database db :table :people}
+  (randomized :name)
+  (randomized :lucky_number))
+
+(seed-table people)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    <code>randomize</code> is the reason I built this library. This function will inference the underlying table
+                    structure and pick a suitable value seed with. If the column 'name' is a text column, Dibble will produce some text.
+                    The same goes for numeric types, and anything else that is implemented.
+                </div>
+            </div>
+            </div>
+            </div>
+            
+                        
+            <div class="row" id="fk">
+            <div class="span9 well">
+            <h1>Foreign Keys</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defseed pets
+  {:database db :table :pets}
+  (inherit :pet_id)
+  (randomized :name))
+
+(defseed people
+  {:database db :table :people}
+  (randomized :number {:fk {pets :pet_id}}))
+
+(seed-table people)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    Data of any substantial complexity is going to be using foreign keys. Dibble handles this gracefully.
+                    <code>inherit</code> is a function that receives a value as a foreign key. The foreign key is delivered to
+                    the seed by another seed via the <code>:fk</code> option. <code>:fk</code> takes a map of tables to columns
+                    to push its value to.
+                </div>
+            </div>
+            </div>
+            </div>
+        </div>
+      </div>
+    
+    <footer class="footer">
+        <div class="container" style="margin:0 auto;">
+            Copyright 2012 Michael Drogalis
+        </div>
+    </footer>
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
