@@ -18,5 +18,5 @@
   (cond (and (not (nil? min)) (not (nil? max))) (random-double min max)
         (and (not (nil? min)) (nil? max)) (random-double min Short/MAX_VALUE)
         (and (nil? min) (not (nil? max))) (random-double Short/MIN_VALUE max)
-        :else (random-double -10 10)))
+        :else (random-double Short/MIN_VALUE Short/MAX_VALUE)))
 
