@@ -47,7 +47,7 @@
   (let [data-type (:type constraints)]
     (cond (= data-type :string) (randomized-string constraints args)
           (= data-type :integer) (randomized-integer constraints args)
-          (= data-type :decimal) (randomized-double constraints args))))
+          (= data-type :decimal) (randomized-decimal constraints args))))
   
 (defn randomized
   ([column] (randomized column {}))
