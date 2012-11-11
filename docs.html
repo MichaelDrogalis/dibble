@@ -38,7 +38,7 @@
               <li><a href="#random">randomize</a></li>
               <li><a href="#fk  ">inherit</a></li>
               <li><a href="#options">options</a></li>
-              <li><a href="#">policies</a></li>
+              <li><a href="#policies">policies</a></li>
               <li><a href="#">support</a></li>
             </ul>
           </div><!--/.well --> 
@@ -183,10 +183,10 @@
                 </div>
                 <div class="span4 narrative">
                     Dibble takes options to <code>randomized</code>, <code>inherit</code>, <code>value-of</code>, and <code>defseed</code>.
-                    It's probably easy to determine what these do, but I'll enumerate them below just in case it isn't.
+                    <code>:n</code> indicates the number of rows to insert. It's probably easy to determine what the rest of these do,
+                    but I'll enumerate them below just in case it isn't.
                 </div>
             </div>
-            
                       
             <div class="row">
                 <div class="span9">
@@ -300,6 +300,60 @@
                 </div>
             </div>
             
+            </div>
+            </div>
+            
+            
+            <div class="row" id="policies">
+            <div class="span9 well">
+            <h1>Policies</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defseed people
+  {:database db :table :people
+   :policy :clean-slate :n 200}
+  (randomized :name)
+  (randomized :number))
+
+(seed-table people)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    Policies let Dibble know what do before writing data to a table.
+                </div>
+            </div>
+            
+                <div class="row">
+                <div class="span9">
+                    <h2>Policy options</h2>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Policy</td>
+                            <td>Usage</td>
+                            <td>Description</td>
+                        </tr>
+                        <tr>
+                            <td>Append</td>
+                            <td><code>{:policy :append}</code></td>
+                            <td>Only append to the table. Append is the default.</td>
+                        </tr>
+                        <tr>
+                            <td>Clean Slate</td>
+                            <td><code>{:policy :clean-slate}</code></td>
+                            <td>Delete all rows in <code>:table</code> before seeding</td>
+                        </tr>
+                      <tr>
+                            <td>Dependent</td>
+                            <td><code>{:policy :clean-slate :dependents [:pets :children]}</code></td>
+                            <td>Apply the specified policy to all tables in <code>:dependents</code></td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
             </div>
             </div>
         </div>
