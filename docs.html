@@ -37,7 +37,7 @@
               <li><a href="#values">value-of</a></li>
               <li><a href="#random">randomize</a></li>
               <li><a href="#fk  ">inherit</a></li>
-              <li><a href="#">options</a></li>
+              <li><a href="#options">options</a></li>
               <li><a href="#">policies</a></li>
               <li><a href="#">support</a></li>
             </ul>
@@ -106,8 +106,7 @@
             </div>
             </div>
             </div>
-            
-            
+             
             <div class="row" id="random">
             <div class="span9 well">
             <h1>Randomness</h1>
@@ -133,8 +132,7 @@
             </div>
             </div>
             </div>
-            
-                        
+                                
             <div class="row" id="fk">
             <div class="span9 well">
             <h1>Foreign Keys</h1>
@@ -163,6 +161,83 @@
                     to push its value to.
                 </div>
             </div>
+            </div>
+            </div>
+            
+            <div class="row" id="options">
+            <div class="span9 well">
+            <h1>Type Options</h1>
+            
+            <div class="row">
+                <div class="span5">
+                                <pre>
+                <code class="seed-code">
+(defseed people
+  {:database db :table :people :n 50}
+  (randomized :name {:length 16})
+  (randomized :number {:min 5 :max 10}))
+
+(seed-table people)
+                </code>
+            </pre>
+                </div>
+                <div class="span4 narrative">
+                    Dibble takes options to <code>randomized</code>, <code>inherit</code>, <code>value-of</code>, and <code>defseed</code>.
+                    It's probably easy to determine what these do, but I'll enumerate them below just in case it isn't.
+                </div>
+            </div>
+            
+                      
+            <div class="row">
+                <div class="span9">
+                    <h2>String options</h2>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Option</td>
+                            <td>Usage</td>
+                            <td>Description</td>
+                            <td>Mutual exclusion</td>
+                        </tr>
+                        <tr>
+                            <td><code>:min</code></td>
+                            <td><code>{:min 5}</code></td>
+                            <td>Minimum of 5 characters</td>
+                            <td><code>:length</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>:max</code></td>
+                            <td><code>{:max 8}</code></td>
+                            <td>Maximum of 8 characters</td>
+                            <td><code>:length</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>:length</code></td>
+                            <td><code>{:length 6}</code></td>
+                            <td>Length is exactly 6 characters</td>
+                            <td><code>:min, :max</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>:first-name</code></td>
+                            <td><code>{:subtype :first-name}</code></td>
+                            <td>An English first name</td>
+                            <td><code>:length, :min, :max</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>:last-name</code></td>
+                            <td><code>{:subtype :last-name}</code></td>
+                            <td>An English last name</td>
+                            <td><code>:length, :min, :max</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>:full-name</code></td>
+                            <td><code>{:subtype :full-name}</code></td>
+                            <td>An English full name. String, space, string.</td>
+                            <td><code>:length, :min, :max</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
             </div>
             </div>
         </div>
