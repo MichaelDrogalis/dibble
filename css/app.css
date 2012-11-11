@@ -6,6 +6,14 @@ body {
     font-size: 90px;
 }
 
+.dibble-title a {
+    color: #555;
+}
+
+.dibble-title a:hover {
+    text-decoration: none;
+}
+
 .tag-line {
     margin-top: 15px;
     font-style: italic;
