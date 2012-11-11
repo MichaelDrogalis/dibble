@@ -1,6 +1,7 @@
 # dibble
 
 Dibble is a Clojure library that intelligently, randomly seeds databases by inferencing the underlying table structure.
+See the [docs](http://michaeldrogalis.github.com/dibble) for more more information.
 
 ```clojure
 (defseed people
@@ -55,130 +56,6 @@ Values don't have to be totally random. Dibble offers some constraints:
   (randomized :number {:min 5 :max 10})) ;;; random integer between 5 and 10 inclusive
 
 (seed-table people)
-```
-
-Dibble handles tables that have foreign keys. Let's introduce another table to up the complexity a smidge:
-```sql
-mysql> desc pets;
-+-------+-------------+------+-----+---------+-------+
-| Field | Type        | Null | Key | Default | Extra |
-+-------+-------------+------+-----+---------+-------+
-| pid   | int(11)     | YES  |     | NULL    |       |
-| name  | varchar(32) | YES  |     | NULL    |       |
-+-------+-------------+------+-----+---------+-------+
-```
-
-Suppose the `number` column in the `people` table refers to the `pid` column of `pets`, effectively making `pid` a foreign key. Each time we generate a seed for a row in the `people` table, we want to generate a row in the `pets` table so the data makes semantic sense. Here's the code to do that:
-
-```clojure
-(defseed pets
-  {:database db :table :pets} ;;; don't specify a policy since it depends on other tables
-  (inherit :pid)              ;;; :pid is given to us from another row in another table
-  (randomized :name))
-
-;;; :dependents takes a vector that specifies other
-;;; tables to apply :policy to before seeding.
-(defseed people
-  {:database db :table :people :policy :transitive :dependents [:pets] :n 50}
-  (randomized :name)
-  (randomized :number {:fk {pets :pid}})) ;;; :fk specifies a map
-                                          ;;; of tables to columns to place :number into
-
-(seed-table people)
-```
-
-## Supported Databases
-
-Database | Supported?
--------- | ----------
-MySQL    | Yes
-Postgres | Not yet
-Oracle   | Not yet
-MSSQL    | Not yet
-SQLite   | Not yet
-
-### MySQL Support
-MySQL type   | Supported? | Maps to Dibble type
------------- | ---------- | -------------------
-`varchar`    | Yes        | `:string`
-`int`        | Yes        | `:integer`
-`char`       | No         | `:string`
-`tinytext`   | No         | `:string`
-`text`       | No         | `:string`
-`mediumtext` | No         | `:string`
-`longtext`   | No         | `:string`
-`tinyint`    | No         | `:integer`
-`smallint`   | No         | `:integer`
-`mediumint`  | No         | `:integer`
-`bigint`     | No         | `:integer`
-`float`      | Yes        | `:decimal`
-`double`     | Yes        | `:decimal`
-`decimal`    | Yes        | `:decimal`
-`date`       | No         | ?
-`datetime`   | No         | ?
-`timestamp`  | No         | ?
-`time`       | No         | ?
-`blob`       | No         | ?
-`mediumblob` | No         | ?
-`longblob`   | No         | ?
-`enum`       | No         | -
-`set`        | No         | -
-
-## Dibble Type Options
-
-### `:string` Options
-
-Option       | Usage                    | Description                                 | Mutually exclusive with
--------------|--------------------------|---------------------------------------------|------------------------
-`:min`       | `{:min 5}`               | Generated string length has a minimum of 5  | `:length`
-`:max`       | `{:max 10}`              | Generated string length has a maximum of 10 | `:length`
-`:length`    | `{:length 8}`            | Generated string is exactly 8 characters    | `:min`, `:max`
-`:first-name`| `{:subtype :first-name}` | Generated string is an English first name   | `:length`, `:min`, `:max`
-`:last-name` | `{:subtype :last-name}`  | Generated string is an English last name    | `:length`, `:min`, `:max`
-`:full-name` | `{:subtype :full-name}`  | Generated string is an English full name    | `:length`, `:min`, `:max`, `:first-name`, `:last-name`
-
-### `:integer` & `:decimal` Options
-Option       | Usage            | Description                                 | Mutually exclusive with
--------------|------------------|---------------------------------------------|------------------------
-`:min`       | `{:min 5}`       | Generated integer is 5 or greater           |
-`:max`       | `{:max 60.5}`    | Generated double is 60.5 or less            |
-
-## Dibble Policies
-
-Policy         | Usage                    | Description
--------------- | ------------------------ | -----------
-`:append`      | `{:policy :append}`      | Append seeds to what is currently in the table
-`:clean-slate` | `{:policy :clean-slate}` | Delete all rows in the table before seeding
-`:dependents`  | `{:dependents [:table1]` | Apply :policy to all tables in `:dependents`
-
-## Seeding Functions
-
-### `randomized`
-
-Creates a random seed of the appropriate type. Takes option to constraint generated values.
-
-```clojure
-(randomized :column & args?)                    ;;; skeleton
-(randomized :name)                              ;;; random value for 'name' column
-(randomized :name {:min-chars 4 :max-chars 10}) ;;; generate string between 4 and 10 chars
-(randomized :name {:length 5})                  ;;; generate string of length 5
-```
-
-### `inherit`
-
-Receive a value as a result of another seeding operation. Useful for when a column is a foreign key.
-
-```clojure
-(inherit :column) ;;; skeleton
-(inherit :id)     ;;; :id will be generated as the result of another seed in another table
-```
-
-### `value-of`
-
-Use the value specified for seeding
-
-```clojure
-(value-of :name "Mike")
 ```
 
 ## Contribute
