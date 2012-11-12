@@ -12,9 +12,7 @@
 (defn random-double [min max]
   (+ min (* (- max min) (.nextDouble (new Random)))))
 
-(defn randomized-decimal [column {:keys [min max]}]
-  (cond (and (not (nil? min)) (not (nil? max))) (random-double min max)
-        (and (not (nil? min)) (nil? max)) (random-double min Short/MAX_VALUE)
-        (and (nil? min) (not (nil? max))) (random-double Short/MIN_VALUE max)
-        :else (random-double Short/MIN_VALUE Short/MAX_VALUE)))
+(defn randomized-decimal [column-description options]
+  (let [args (merge column-description options)]
+    (random-double (:min args) (:max args))))
 
