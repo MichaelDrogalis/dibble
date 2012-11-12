@@ -5,11 +5,9 @@
 (defn random-integer [min max]
   (+ (long (rand (- (inc max) min))) min))
   
-(defn randomized-integer [column {:keys [min max]}]
-  (cond (and (not (nil? min)) (not (nil? max))) (random-integer min max)
-        (and (not (nil? min)) (nil? max)) (random-integer min Integer/MAX_VALUE)
-        (and (nil? min) (not (nil? max))) (random-integer Integer/MIN_VALUE max)
-        :else (random-integer (:min column) (:max column))))
+(defn randomized-integer [column-description options]
+  (let [args (merge column-description options)]
+    (random-integer (:min args) (:max args))))
 
 (defn random-double [min max]
   (+ min (* (- max min) (.nextDouble (new Random)))))
