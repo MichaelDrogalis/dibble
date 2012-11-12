@@ -57,7 +57,6 @@ Values don't have to be totally random. Dibble offers some constraints:
 
 (seed-table people)
 ```
-
 ## Contribute
 
 Contributions are most welcome. There's a ton of work to do, and it's fairly easy to contribute.
