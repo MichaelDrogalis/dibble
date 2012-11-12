@@ -12,7 +12,7 @@
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
 
 (defn integer-metadata [column description]
-  {(keyword column) {:type :integer :bytes 4}})
+  {(keyword column) {:type :integer :min -2147483648 :max 2147483647}})
 
 (defn float-metadata [column description]
   {(keyword column)

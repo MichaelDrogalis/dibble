@@ -9,7 +9,7 @@
   (cond (and (not (nil? min)) (not (nil? max))) (random-integer min max)
         (and (not (nil? min)) (nil? max)) (random-integer min Integer/MAX_VALUE)
         (and (nil? min) (not (nil? max))) (random-integer Integer/MIN_VALUE max)
-        :else (random-integer Integer/MIN_VALUE Integer/MAX_VALUE)))
+        :else (random-integer (:min column) (:max column))))
 
 (defn random-double [min max]
   (+ min (* (- max min) (.nextDouble (new Random)))))

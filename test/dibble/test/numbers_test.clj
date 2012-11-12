@@ -27,11 +27,11 @@
 
 (def double-column {:type :double})
 
-(fact (float? (randomized-double double-column {})) => true)
+(fact (float? (randomized-decimal double-column {})) => true)
 
-(fact (>= (randomized-double double-column {:min 3.14}) 3.14) => true)
-(fact (<= (randomized-double double-column {:max 3.14}) 3.14) => true)
+(fact (>= (randomized-decimal double-column {:min 3.14}) 3.14) => true)
+(fact (<= (randomized-decimal double-column {:max 3.14}) 3.14) => true)
 
 (fact
- (let [n (randomized-double double-column {:min 1.23 :max 2.01})]
+ (let [n (randomized-decimal double-column {:min 1.23 :max 2.01})]
    (and (>= n 1.23) (<= n 2.01))) => true)
