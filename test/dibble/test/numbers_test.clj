@@ -20,8 +20,8 @@
 
 (fact (float? (randomized-decimal double-column {})) => true)
 
-(fact (>= (randomized-decimal double-column {:min 3.14}) 3.14) => true)
-(fact (<= (randomized-decimal double-column {:max 3.14}) 3.14) => true)
+(fact (>= (randomized-decimal double-column {:min 3.14 :max 3.25}) 3.14) => true)
+(fact (<= (randomized-decimal double-column {:min 3.14 :max 3.25}) 3.25) => true)
 
 (fact (#(and (>= % 1.23) (<= % 2.01))
        (randomized-decimal double-column {:min 1.23 :max 2.01})) => true)
