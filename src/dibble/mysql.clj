@@ -3,6 +3,7 @@
             [korma.db :refer :all]))
 
 (def varchar-regex #"varchar\((\d+)\)")
+(def tinyint-regex #"tinyint.*")
 (def integer-regex #"int.*")
 (def float-regex   #"float(\((\d+),(\d+)\))?")
 (def double-regex  #"double(\((\d+),(\d+)\))?")
@@ -10,6 +11,9 @@
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+
+(defn tinyint-metadata [column description]
+  {(keyword column) {:type :integer :min -128 :max 127}})
 
 (defn integer-metadata [column description]
   {(keyword column) {:type :integer :min -2147483648 :max 2147483647}})
@@ -52,6 +56,7 @@
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
      [[varchar-regex varchar-metadata]
+      [tinyint-regex tinyint-metadata]
       [integer-regex integer-metadata]
       [float-regex float-metadata]
       [double-regex double-metadata]
