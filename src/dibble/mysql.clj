@@ -2,13 +2,14 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
-(def varchar-regex  #"varchar\((\d+)\)")
-(def tinyint-regex  #"tinyint.*")
-(def smallint-regex #"smallint.*")
-(def integer-regex  #"int.*")
-(def float-regex    #"float(\((\d+),(\d+)\))?")
-(def double-regex   #"double(\((\d+),(\d+)\))?")
-(def decimal-regex  #"decimal(\((\d+),(\d+)\))?")
+(def varchar-regex   #"varchar\((\d+)\)")
+(def tinyint-regex   #"tinyint.*")
+(def smallint-regex  #"smallint.*")
+(def integer-regex   #"int.*")
+(def mediumint-regex #"mediumint.*")
+(def float-regex     #"float(\((\d+),(\d+)\))?")
+(def double-regex    #"double(\((\d+),(\d+)\))?")
+(def decimal-regex   #"decimal(\((\d+),(\d+)\))?")
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -21,6 +22,9 @@
 
 (defn integer-metadata [column description]
   {(keyword column) {:type :integer :min -2147483648 :max 2147483647}})
+
+(defn mediumint-metadata [column description]
+  {(keyword column) {:type :integer :min -8388608 :max 8388607}})
 
 (defn float-max-value [regex-result n max]
   (if-not (nil? (nth regex-result n))
@@ -59,13 +63,14 @@
      (fn [[regex metadata-fn]]
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
-     [[varchar-regex  varchar-metadata]
-      [tinyint-regex  tinyint-metadata]
-      [smallint-regex smallint-metadata]
-      [integer-regex  integer-metadata]
-      [float-regex    float-metadata]
-      [double-regex   double-metadata]
-      [decimal-regex  decimal-metadata]]))))
+     [[varchar-regex   varchar-metadata]
+      [tinyint-regex   tinyint-metadata]
+      [smallint-regex  smallint-metadata]
+      [integer-regex   integer-metadata]
+      [mediumint-regex mediumint-metadata]
+      [float-regex     float-metadata]
+      [double-regex    double-metadata]
+      [decimal-regex   decimal-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
@@ -75,3 +80,4 @@
         fields (map :Field query)
         types (map :Type query)]
     (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
+
