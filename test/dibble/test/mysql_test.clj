@@ -10,16 +10,22 @@
  (fact (mysql-to-clj-type [:name "varchar(32)"]) => {:name {:type :string :max-chars 32}}))
 
 (facts
- "The MySQL integer type is supported."
- (fact (:type (:age (mysql-to-clj-type [:age "int"]))) => :integer)
- (fact (:type (:age (mysql-to-clj-type [:age "int(5)"]))) => :integer)
- (fact (:type (:age (mysql-to-clj-type [:age "int(11)"]))) => :integer))
-
-(facts
  "The MySQL tinyint type is supported."
  (fact (:type (:age (mysql-to-clj-type [:age "tinyint"]))) => :integer)
  (fact (:type (:age (mysql-to-clj-type [:age "tinyint(5)"]))) => :integer)
  (fact (:type (:age (mysql-to-clj-type [:age "tinyint(11)"]))) => :integer))
+
+(facts
+ "The MySQL smallint type is supported."
+ (fact (:type (:age (mysql-to-clj-type [:age "smallint"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "smallint(5)"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "smallint(11)"]))) => :integer)) 
+
+(facts
+ "The MySQL integer type is supported."
+ (fact (:type (:age (mysql-to-clj-type [:age "int"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "int(5)"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "int(11)"]))) => :integer))
 
 (facts
  "The MySQL double type is supported."
