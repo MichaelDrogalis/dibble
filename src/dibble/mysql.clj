@@ -17,7 +17,7 @@
 (defn float-max-value [regex-result n]
   (if-not (nil? (nth regex-result n))
     (dec (Math/pow 10 (- (read-string (nth regex-result 2)) 2)))
-    (dec (Math/pow 10 38))))
+    (dec 1e38)))
 
 (defn float-metadata [column description]
   (let [integral-max (float-max-value description 2)]
