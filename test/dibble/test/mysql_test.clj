@@ -32,7 +32,13 @@
  (fact (:type (:age (mysql-to-clj-type [:age "mediumint"]))) => :integer)
  (fact (:type (:age (mysql-to-clj-type [:age "mediumint(5)"]))) => :integer)
  (fact (:type (:age (mysql-to-clj-type [:age "mediumint(11)"]))) => :integer))
- 
+
+(facts
+ "The MySQL bigint type is supported."
+ (fact (:type (:age (mysql-to-clj-type [:age "bigint"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "bigint(5)"]))) => :integer)
+ (fact (:type (:age (mysql-to-clj-type [:age "bigint(11)"]))) => :integer))
+
 (facts
  "The MySQL double type is supported."
  (fact (:type (:balance (mysql-to-clj-type [:balance "double"]))) => :decimal)

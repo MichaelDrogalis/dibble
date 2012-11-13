@@ -7,6 +7,7 @@
 (def smallint-regex  #"smallint.*")
 (def integer-regex   #"int.*")
 (def mediumint-regex #"mediumint.*")
+(def bigint-regex    #"bigint.*")
 (def float-regex     #"float(\((\d+),(\d+)\))?")
 (def double-regex    #"double(\((\d+),(\d+)\))?")
 (def decimal-regex   #"decimal(\((\d+),(\d+)\))?")
@@ -25,6 +26,9 @@
 
 (defn mediumint-metadata [column description]
   {(keyword column) {:type :integer :min -8388608 :max 8388607}})
+
+(defn bigint-metadata [column description]
+  {(keyword column) {:type :integer :min -9223372036854775808 :max 9223372036854775807}})
 
 (defn float-max-value [regex-result n max]
   (if-not (nil? (nth regex-result n))
@@ -68,6 +72,7 @@
       [smallint-regex  smallint-metadata]
       [integer-regex   integer-metadata]
       [mediumint-regex mediumint-metadata]
+      [bigint-regex    bigint-metadata]
       [float-regex     float-metadata]
       [double-regex    double-metadata]
       [decimal-regex   decimal-metadata]]))))
