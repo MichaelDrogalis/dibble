@@ -2,22 +2,38 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
-(def char-regex      #"char\((\d+)\)")
-(def varchar-regex   #"varchar\((\d+)\)")
-(def tinyint-regex   #"tinyint.*")
-(def smallint-regex  #"smallint.*")
-(def integer-regex   #"int.*")
-(def mediumint-regex #"mediumint.*")
-(def bigint-regex    #"bigint.*")
-(def float-regex     #"float(\((\d+),(\d+)\))?")
-(def double-regex    #"double(\((\d+),(\d+)\))?")
-(def decimal-regex   #"decimal(\((\d+),(\d+)\))?")
+(def char-regex       #"char\((\d+)\)")
+(def varchar-regex    #"varchar\((\d+)\)")
+(def tinytext-regex   #"tinytext")
+(def text-regex       #"text")
+(def mediumtext-regex #"mediumtext")
+(def longtext-regex   #"longtext")
+(def tinyint-regex    #"tinyint.*")
+(def smallint-regex   #"smallint.*")
+(def integer-regex    #"int.*")
+(def mediumint-regex  #"mediumint.*")
+(def bigint-regex     #"bigint.*")
+(def float-regex      #"float(\((\d+),(\d+)\))?")
+(def double-regex     #"double(\((\d+),(\d+)\))?")
+(def decimal-regex    #"decimal(\((\d+),(\d+)\))?")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+
+(defn tinytext-metadata [column description]
+  {(keyword column) {:type :string :max-chars 255}})
+
+(defn text-metadata [column description]
+  {(keyword column) {:type :string :max-chars 65535}})
+
+(defn mediumtext-metadata [column description]
+  {(keyword column) {:type :string :max-chars 16777215}})
+
+(defn longtext-metadata [column description]
+  {(keyword column) {:type :string :max-chars 4294967295}})
 
 (defn tinyint-metadata [column description]
   {(keyword column) {:type :integer :min -128 :max 127}})
@@ -71,16 +87,20 @@
      (fn [[regex metadata-fn]]
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
-     [[char-regex      char-metadata]
-      [varchar-regex   varchar-metadata]
-      [tinyint-regex   tinyint-metadata]
-      [smallint-regex  smallint-metadata]
-      [integer-regex   integer-metadata]
-      [mediumint-regex mediumint-metadata]
-      [bigint-regex    bigint-metadata]
-      [float-regex     float-metadata]
-      [double-regex    double-metadata]
-      [decimal-regex   decimal-metadata]]))))
+     [[char-regex       char-metadata]
+      [varchar-regex    varchar-metadata]
+      [tinytext-regex   tinytext-metadata]
+      [text-regex       text-metadata]
+      [mediumtext-regex mediumtext-metadata]
+      [longtext-regex   longtext-metadata]
+      [tinyint-regex    tinyint-metadata]
+      [smallint-regex   smallint-metadata]
+      [integer-regex    integer-metadata]
+      [mediumint-regex  mediumint-metadata]
+      [bigint-regex     bigint-metadata]
+      [float-regex      float-metadata]
+      [double-regex     double-metadata]
+      [decimal-regex    decimal-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 

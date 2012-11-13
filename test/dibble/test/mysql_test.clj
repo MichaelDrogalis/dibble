@@ -16,6 +16,13 @@
  (fact (mysql-to-clj-type [:name "varchar(32)"]) => {:name {:type :string :max-chars 32}}))
 
 (facts
+ "The MySQL tinytext, text, mediumtext, and longtext types are supported."
+ (fact (mysql-to-clj-type [:name "tinytext"]) => {:name {:type :string :max-chars 255}})
+ (fact (mysql-to-clj-type [:name "text"]) => {:name {:type :string :max-chars 65535}})
+ (fact (mysql-to-clj-type [:name "mediumtext"]) => {:name {:type :string :max-chars 16777215}})
+ (fact (mysql-to-clj-type [:name "longtext"]) => {:name {:type :string :max-chars 4294967295}}))
+
+(facts
  "The MySQL tinyint type is supported."
  (fact (:type (:age (mysql-to-clj-type [:age "tinyint"]))) => :integer)
  (fact (:type (:age (mysql-to-clj-type [:age "tinyint(5)"]))) => :integer)
