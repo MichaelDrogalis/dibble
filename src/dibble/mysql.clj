@@ -2,6 +2,7 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
+(def char-regex      #"char\((\d+)\)")
 (def varchar-regex   #"varchar\((\d+)\)")
 (def tinyint-regex   #"tinyint.*")
 (def smallint-regex  #"smallint.*")
@@ -11,6 +12,9 @@
 (def float-regex     #"float(\((\d+),(\d+)\))?")
 (def double-regex    #"double(\((\d+),(\d+)\))?")
 (def decimal-regex   #"decimal(\((\d+),(\d+)\))?")
+
+(defn char-metadata [column description]
+  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -67,7 +71,8 @@
      (fn [[regex metadata-fn]]
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
-     [[varchar-regex   varchar-metadata]
+     [[char-regex      char-metadata]
+      [varchar-regex   varchar-metadata]
       [tinyint-regex   tinyint-metadata]
       [smallint-regex  smallint-metadata]
       [integer-regex   integer-metadata]

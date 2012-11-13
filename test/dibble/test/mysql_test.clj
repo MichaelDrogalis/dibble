@@ -3,6 +3,12 @@
             [dibble.mysql :refer :all]))
 
 (facts
+ "The MySQL char type is supported."
+ (fact (mysql-to-clj-type [:name "char(1)"]) => {:name {:type :string :max-chars 1}})
+ (fact (mysql-to-clj-type [:name "char(5)"]) => {:name {:type :string :max-chars 5}})
+ (fact (mysql-to-clj-type [:name "char(8)"]) => {:name {:type :string :max-chars 8}})) 
+
+(facts
  "The MySQL varchar type is supported."
  (fact (mysql-to-clj-type [:name "varchar"]) => nil)
  (fact (mysql-to-clj-type [:name "varchar(1)"]) => {:name {:type :string :max-chars 1}})
