@@ -11,8 +11,8 @@
 (fact (:type (:age (mysql-to-clj-type [:age "int(5)"]))) => :integer)
 (fact (:type (:age (mysql-to-clj-type [:age "int(11)"]))) => :integer)
 
-(fact (mysql-to-clj-type [:balance "double"]) => {:balance {:type :decimal :precision 53}})
-(fact (mysql-to-clj-type [:balance "double(5,4)"]) => {:balance {:type :decimal :precision 5}})
+(fact (:type (:balance (mysql-to-clj-type [:balance "double"]))) => :decimal)
+(fact (:type (:balance (mysql-to-clj-type [:balance "double(5,4)"]))) => :decimal)
 
 (fact (:type (:balance (mysql-to-clj-type [:balance "float"]))) => :decimal)
 (fact (mysql-to-clj-type [:balance "float(5,2)"]) => {:balance {:type :decimal :min -999.0 :max 999.0}})
