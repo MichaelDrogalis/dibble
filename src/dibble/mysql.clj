@@ -36,10 +36,12 @@
       :max integral-max}}))
 
 (defn decimal-metadata [column description]
-  {(keyword column)
-   {:type :decimal
-    :precision (read-string (or (nth description 2) "10"))
-    :accuracy (read-string (or (nth description 3) "0"))}})
+  (let [max 1e65
+        integral-max (float-max-value description 2 max)]
+    {(keyword column)
+     {:type :decimal
+      :min (* -1 integral-max)
+      :max integral-max}}))
 
 (defn mysql-to-clj-type [[column data-type]]
   (first
