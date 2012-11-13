@@ -15,7 +15,7 @@
 (fact (:type (:balance (mysql-to-clj-type [:balance "double(5,4)"]))) => :decimal)
 
 (fact (:type (:balance (mysql-to-clj-type [:balance "float"]))) => :decimal)
-(fact (mysql-to-clj-type [:balance "float(5,2)"]) => {:balance {:type :decimal :min -999.0 :max 999.0}})
+(fact (:type (:balance (mysql-to-clj-type [:balance "float(5,2)"]))) => :decimal)
 
 (fact (:type (:balance (mysql-to-clj-type [:balance "decimal"]))) => :decimal)
 (fact (:type (:balance (mysql-to-clj-type [:balance "decimal(8,3)"]))) => :decimal)
