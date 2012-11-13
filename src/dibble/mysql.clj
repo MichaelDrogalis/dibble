@@ -14,22 +14,26 @@
 (defn integer-metadata [column description]
   {(keyword column) {:type :integer :min -2147483648 :max 2147483647}})
 
-(defn float-max-value [regex-result n]
+(defn float-max-value [regex-result n max]
   (if-not (nil? (nth regex-result n))
     (dec (Math/pow 10 (- (read-string (nth regex-result 2)) 2)))
-    (dec 1e38)))
+    (dec max)))
 
 (defn float-metadata [column description]
-  (let [integral-max (float-max-value description 2)]
+  (let [max 1e38
+        integral-max (float-max-value description 2 max)]
     {(keyword column)
      {:type :decimal
       :min (* -1 integral-max)
       :max integral-max}}))
 
 (defn double-metadata [column description]
-  {(keyword column)
-   {:type :decimal
-    :precision (read-string (or (nth description 2) "53"))}})
+  (let [max 1.7976931348623157E+307
+        integral-max (float-max-value description 2 max)]
+    {(keyword column)
+     {:type :decimal
+      :min (* -1 integral-max)
+      :max integral-max}}))
 
 (defn decimal-metadata [column description]
   {(keyword column)
