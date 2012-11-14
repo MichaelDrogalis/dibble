@@ -9,6 +9,7 @@
 (fact (some #{(random-integer 0 9)} (range 0 10)) =not=> nil)
 (fact (some #{(random-integer -10 10)} (range -10 11)) =not=> nil)
 (fact (some #{(random-integer -10 -5)} (range -10 -4)) =not=> nil)
+(fact (some #{(random-integer -6 -6)} (list -6)) =not=> nil)
 
 (fact (>= (randomized-integer integer-column {:min 0}) 0) => true)
 (fact (>= (randomized-integer integer-column {:min 5}) 5) => true)
