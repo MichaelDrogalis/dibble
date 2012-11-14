@@ -75,6 +75,7 @@
  (fact (:type (:modified (mysql-to-clj-type [:modified "time"]))) => :datetime))
 
 (facts
- "The MySQL blob datatype is supported."
+ "The MySQL tinyblob and blob datatypes are supported."
+ (fact (:type (:image (mysql-to-clj-type [:image "tinyblob"]))) => :binary)
  (fact (:type (:image (mysql-to-clj-type [:image "blob"]))) => :binary))
 
