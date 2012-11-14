@@ -21,6 +21,7 @@
 (def datetime-regex   #"datetime")
 (def date-regex       #"date")
 (def time-regex       #"time")
+(def blob-regex       #"blob")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -108,6 +109,12 @@
     :min (time/date-time 1000 1 1 0 0 0)
     :max (time/date-time 9999 1 1 23 59 59)}})
 
+(defn blob-metadata [column description]
+  {(keyword column)
+   {:type :binary
+    :min 0
+    :max 99999}})
+
 (defn mysql-to-clj-type [[column data-type]]
   (first
    (filter
@@ -133,7 +140,8 @@
       [timestamp-regex  timestamp-metadata]
       [datetime-regex   datetime-metadata]
       [date-regex       date-metadata]
-      [time-regex       time-metadata]]))))
+      [time-regex       time-metadata]
+      [blob-regex       blob-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
