@@ -68,7 +68,8 @@
  (fact (:type (:balance (mysql-to-clj-type [:balance "decimal(8,3)"]))) => :decimal))
 
 (facts
- "The MySQL datetime and timestamp types are supported."
+ "The MySQL datetime, date, and timestamp types are supported."
  (fact (:type (:modified (mysql-to-clj-type [:modified "timestamp"]))) => :datetime)
- (fact (:type (:modified (mysql-to-clj-type [:modified "datetime"]))) => :datetime))
+ (fact (:type (:modified (mysql-to-clj-type [:modified "datetime"]))) => :datetime)
+ (fact (:type (:modified (mysql-to-clj-type [:modified "date"]))) => :datetime))
 

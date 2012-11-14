@@ -19,6 +19,7 @@
 (def decimal-regex    #"decimal(\((\d+),(\d+)\))?")
 (def timestamp-regex  #"timestamp")
 (def datetime-regex   #"datetime")
+(def date-regex       #"date")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -94,6 +95,12 @@
     :min (time/date-time 1000 1 1 0 0 0)
     :max (time/date-time 9999 12 31 23 59 59)}})
 
+(defn date-metadata [column description]
+  {(keyword column)
+   {:type :datetime
+    :min (time/date-time 1000 1 1)
+    :max (time/date-time 9999 12 31)}})
+
 (defn mysql-to-clj-type [[column data-type]]
   (first
    (filter
@@ -117,7 +124,8 @@
       [double-regex     double-metadata]
       [decimal-regex    decimal-metadata]
       [timestamp-regex  timestamp-metadata]
-      [datetime-regex   datetime-metadata]]))))
+      [datetime-regex   datetime-metadata]
+      [date-regex       date-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
