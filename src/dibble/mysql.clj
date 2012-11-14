@@ -1,6 +1,7 @@
 (ns dibble.mysql
   (:require [korma.core :refer :all]
-            [korma.db :refer :all]))
+            [korma.db :refer :all]
+            [clj-time.core :as time]))
 
 (def char-regex       #"char\((\d+)\)")
 (def varchar-regex    #"varchar\((\d+)\)")
@@ -16,6 +17,7 @@
 (def float-regex      #"float(\((\d+),(\d+)\))?")
 (def double-regex     #"double(\((\d+),(\d+)\))?")
 (def decimal-regex    #"decimal(\((\d+),(\d+)\))?")
+(def timestamp-regex  #"timestamp")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -79,6 +81,12 @@
       :min (* -1 integral-max)
       :max integral-max}}))
 
+(defn timestamp-metadata [column description]
+  {(keyword column)
+   {:type :timestamp
+    :min (time/date-time 1970 1 1 0 0 1)
+    :max (time/date-time 2038 1 19 3 14 7)}})
+
 (defn mysql-to-clj-type [[column data-type]]
   (first
    (filter
@@ -100,7 +108,8 @@
       [bigint-regex     bigint-metadata]
       [float-regex      float-metadata]
       [double-regex     double-metadata]
-      [decimal-regex    decimal-metadata]]))))
+      [decimal-regex    decimal-metadata]
+      [timestamp-regex  timestamp-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 

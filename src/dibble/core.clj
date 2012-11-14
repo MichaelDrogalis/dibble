@@ -3,7 +3,8 @@
             [korma.db :refer :all]
             [dibble.mysql :as mysql]
             [dibble.strings :refer :all]
-            [dibble.numbers :refer :all]))
+            [dibble.numbers :refer :all]
+            [dibble.time :refer :all]))
 
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
@@ -47,7 +48,8 @@
   (let [data-type (:type constraints)]
     (cond (= data-type :string) (randomized-string constraints args)
           (= data-type :integer) (randomized-integer constraints args)
-          (= data-type :decimal) (randomized-decimal constraints args))))
+          (= data-type :decimal) (randomized-decimal constraints args)
+          (= data-type :timestamp) (randomized-time constraints args))))
   
 (defn randomized
   ([column] (randomized column {}))
