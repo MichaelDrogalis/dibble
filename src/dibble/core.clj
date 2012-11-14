@@ -49,7 +49,7 @@
     (cond (= data-type :string) (randomized-string constraints args)
           (= data-type :integer) (randomized-integer constraints args)
           (= data-type :decimal) (randomized-decimal constraints args)
-          (= data-type :timestamp) (randomized-time constraints args))))
+          (= data-type :datetime) (randomized-datetime constraints args))))
   
 (defn randomized
   ([column] (randomized column {}))
