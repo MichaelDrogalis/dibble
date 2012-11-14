@@ -8,7 +8,7 @@
     (f min max)))
 
 (defn random-integer [min max]
-  (long (+ (bigdec (rand (- (inc (bigint max)) (bigint min)))) min)))
+  (long (+ (bigint (* (rand) (inc (- max min)))) min)))
 
 (defn randomized-integer [column-map options]
   (generate-value-in-range column-map options random-integer))
