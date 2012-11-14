@@ -120,7 +120,7 @@
   {(keyword column)
    {:type :binary
     :min 0
-    :max 99999}})
+    :max 65535}})
 
 (defn mysql-to-clj-type [[column data-type]]
   (first
