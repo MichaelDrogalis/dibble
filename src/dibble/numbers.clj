@@ -2,21 +2,20 @@
   (:require [clojure.math.numeric-tower :refer :all])
   (import java.util.Random))
 
+(defn generate-value-in-range [column-map options f]
+  (let [{:keys [min max]} (merge column-map options)]
+    (assert (<= min max) "Minimum bound cannot be greater than maximum bound.")
+    (f min max)))
+
 (defn random-integer [min max]
-  (+ (long (rand (- (inc max) min))) min))
-  
-(defn randomized-integer [column {:keys [min max]}]
-  (cond (and (not (nil? min)) (not (nil? max))) (random-integer min max)
-        (and (not (nil? min)) (nil? max)) (random-integer min Integer/MAX_VALUE)
-        (and (nil? min) (not (nil? max))) (random-integer Integer/MIN_VALUE max)
-        :else (random-integer Integer/MIN_VALUE Integer/MAX_VALUE)))
+  (long (+ (bigdec (rand (- (inc (bigint max)) (bigint min)))) min)))
+
+(defn randomized-integer [column-map options]
+  (generate-value-in-range column-map options random-integer))
 
 (defn random-double [min max]
   (+ min (* (- max min) (.nextDouble (new Random)))))
 
-(defn randomized-decimal [column {:keys [min max]}]
-  (cond (and (not (nil? min)) (not (nil? max))) (random-double min max)
-        (and (not (nil? min)) (nil? max)) (random-double min Short/MAX_VALUE)
-        (and (nil? min) (not (nil? max))) (random-double Short/MIN_VALUE max)
-        :else (random-double Short/MIN_VALUE Short/MAX_VALUE)))
+(defn randomized-decimal [column-map options]
+  (generate-value-in-range column-map options random-double))
 
