@@ -16,7 +16,7 @@ See the [docs](http://michaeldrogalis.github.com/dibble) for more more informati
 
 Available on Clojars:
 
-    [dibble "0.1.1-SNAPSHOT"]
+    [dibble "0.1.1"]
 
 ## Usage
 
@@ -57,6 +57,11 @@ Values don't have to be totally random. Dibble offers some constraints:
 
 (seed-table people)
 ```
+
+## Design
+
+![Design](http://i48.tinypic.com/2nbampd.png)
+
 ## Contribute
 
 Contributions are most welcome. There's a ton of work to do, and it's fairly easy to contribute.
