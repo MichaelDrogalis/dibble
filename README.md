@@ -16,7 +16,7 @@ See the [docs](http://michaeldrogalis.github.com/dibble) for more more informati
 
 Available on Clojars:
 
-    [dibble "0.1.2"]
+    [dibble "0.1.3-SNAPSHOT"]
 
 ## Usage
 
