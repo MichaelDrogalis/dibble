@@ -1,4 +1,4 @@
-(defproject dibble "0.1.1"
+(defproject dibble "0.1.2"
   :description "A Clojure library for seeding databases"
   :url "https://github.com/MichaelDrogalis/dibble"
   :license {:name "Eclipse Public License"
@@ -9,6 +9,7 @@
                  [com.stuartsierra/lazytest "1.2.3"]
                  [korma "0.3.0-beta9"]
                  [mysql/mysql-connector-java "5.1.21"]
-                 [org.clojure/math.numeric-tower "0.0.1"]]
+                 [org.clojure/math.numeric-tower "0.0.1"]
+                 [clj-time "0.4.4"]]
   :plugins [[lein-midje "2.0.0-SNAPSHOT"]])
 

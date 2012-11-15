@@ -67,3 +67,17 @@
  (fact (:type (:balance (mysql-to-clj-type [:balance "decimal"]))) => :decimal)
  (fact (:type (:balance (mysql-to-clj-type [:balance "decimal(8,3)"]))) => :decimal))
 
+(facts
+ "The MySQL datetime, date, timestamp, and time types are supported."
+ (fact (:type (:modified (mysql-to-clj-type [:modified "timestamp"]))) => :datetime)
+ (fact (:type (:modified (mysql-to-clj-type [:modified "datetime"]))) => :datetime)
+ (fact (:type (:modified (mysql-to-clj-type [:modified "date"]))) => :datetime)
+ (fact (:type (:modified (mysql-to-clj-type [:modified "time"]))) => :datetime))
+
+(facts
+ "The MySQL tinyblob, blob, mediumblob, and longblob datatypes are supported."
+ (fact (:type (:image (mysql-to-clj-type [:image "tinyblob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "blob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "mediumblob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "longblob"]))) => :binary))
+
