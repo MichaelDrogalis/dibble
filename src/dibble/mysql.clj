@@ -23,6 +23,8 @@
 (def time-regex       #"time")
 (def tinyblob-regex   #"tinyblob")
 (def blob-regex       #"blob")
+(def mediumblob-regex #"mediumblob")
+(def longblob-regex   #"longblob")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -120,7 +122,19 @@
   {(keyword column)
    {:type :binary
     :min 0
-    :max 65535}})
+    :max 511}})
+
+(defn mediumblob-metadata [column description]
+  {(keyword column)
+   {:type :binary
+    :min 0
+    :max 1023}})
+
+(defn longblob-metadata [column description]
+  {(keyword column)
+   {:type :binary
+    :min 0
+    :max 2047}})  
 
 (defn mysql-to-clj-type [[column data-type]]
   (first
@@ -149,7 +163,9 @@
       [date-regex       date-metadata]
       [time-regex       time-metadata]
       [tinyblob-regex   tinyblob-metadata]
-      [blob-regex       blob-metadata]]))))
+      [blob-regex       blob-metadata]
+      [mediumblob-regex mediumblob-metadata]
+      [longblob-regex   longblob-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
 
