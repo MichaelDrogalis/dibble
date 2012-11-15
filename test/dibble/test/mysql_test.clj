@@ -74,3 +74,10 @@
  (fact (:type (:modified (mysql-to-clj-type [:modified "date"]))) => :datetime)
  (fact (:type (:modified (mysql-to-clj-type [:modified "time"]))) => :datetime))
 
+(facts
+ "The MySQL tinyblob, blob, mediumblob, and longblob datatypes are supported."
+ (fact (:type (:image (mysql-to-clj-type [:image "tinyblob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "blob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "mediumblob"]))) => :binary)
+ (fact (:type (:image (mysql-to-clj-type [:image "longblob"]))) => :binary))
+
