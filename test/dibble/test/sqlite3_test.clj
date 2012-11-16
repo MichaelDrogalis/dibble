@@ -15,3 +15,12 @@
  (fact (sqlite3-to-clj-type [:name "varchar(10)"]) => {:name {:type :string :max-chars 10}})
  (fact (sqlite3-to-clj-type [:name "varchar(32)"]) => {:name {:type :string :max-chars 32}}))
 
+(facts
+ "The Sqlite3 tinyint, smallint, int, integer, mediumint, and bigint are supported."
+ (fact (:type (:age (sqlite3-to-clj-type [:age "tinyint"]))) => :integer)
+ (fact (:type (:age (sqlite3-to-clj-type [:age "smallint"]))) => :integer)
+ (fact (:type (:age (sqlite3-to-clj-type [:age "integer"]))) => :integer)
+ (fact (:type (:age (sqlite3-to-clj-type [:age "int"]))) => :integer)
+ (fact (:type (:age (sqlite3-to-clj-type [:age "mediumint"]))) => :integer)
+ (fact (:type (:age (sqlite3-to-clj-type [:age "bigint"]))) => :integer))
+
