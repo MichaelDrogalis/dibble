@@ -8,7 +8,7 @@
 (def smallint-regex  #"smallint")
 (def integer-regex   #"(integer|int)")
 (def mediumint-regex #"mediumint")
-(def bigint-regex   #"bigint")
+(def bigint-regex    #"bigint")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
