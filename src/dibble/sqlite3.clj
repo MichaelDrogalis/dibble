@@ -2,7 +2,11 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
+(def char-regex       #"char\((\d+)\)")
 (def varchar-regex #"varchar\((\d+)\)")
+
+(defn char-metadata [column description]
+  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
 
 (defn varchar-metadata [column description]
   {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
@@ -15,7 +19,8 @@
      (fn [[regex metadata-fn]]
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
-     [[varchar-regex varchar-metadata]]))))
+     [[char-regex    char-metadata]
+      [varchar-regex varchar-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (sqlite3 %)))))
 
