@@ -1,15 +1,19 @@
 (ns dibble.postgres
   (:require [korma.core :refer :all]
-            [korma.db :refer :all]))
+            [korma.db :refer :all]
+            [clj-time.core :as time]))
 
-(def smallint-regex #"smallint")
-(def integer-regex  #"integer")
-(def bigint-regex   #"bigint")
-(def real-regex     #"real")
-(def double-regex   #"double precision")
-(def decimal-regex  #"(decimal|numeric)")
-(def char-regex     #"(char|character|character varying|varchar)\((\d+)\)")
-(def text-regex     #"text")
+(def smallint-regex  #"smallint")
+(def integer-regex   #"integer")
+(def bigint-regex    #"bigint")
+(def real-regex      #"real")
+(def double-regex    #"double precision")
+(def decimal-regex   #"(decimal|numeric)")
+(def char-regex      #"(char|character|character varying|varchar)\((\d+)\)")
+(def text-regex      #"text")
+(def bytea-regex     #"bytea")
+(def timestamp-regex #"timestamp without time zone")
+(def date-regex      #"date")
 
 (defn smallint-metadata [column description]
   {(keyword column)
@@ -56,6 +60,24 @@
   {(keyword column)
    {:type :string}})
 
+(defn bytea-metadata [column description]
+  {(keyword column)
+   {:type :binary
+    :min 0
+    :max 255}})
+
+(defn timestamp-metadata [column description]
+  {(keyword column)
+   {:type :datetime
+    :min (time/date-time -4713471)
+    :max (time/date-time 294276)}})
+
+(defn date-metadata [column description]
+  {(keyword column)
+   {:type :datetime
+    :min (time/date-time -4713)
+    :max (time/date-time 5874897)}})
+
 (defn postgres-to-clj-type [[column data-type]]
   (first
    (filter
@@ -64,14 +86,17 @@
      (fn [[regex metadata-fn]]
        (if-let [description (re-matches regex data-type)]
          (metadata-fn column description)))
-     [[smallint-regex smallint-metadata]
-      [integer-regex  integer-metadata]
-      [bigint-regex   bigint-metadata]
-      [real-regex     real-metadata]
-      [double-regex   double-metadata]
-      [decimal-regex  decimal-metadata]
-      [char-regex     char-metadata]
-      [text-regex     text-metadata]]))))
+     [[smallint-regex  smallint-metadata]
+      [integer-regex   integer-metadata]
+      [bigint-regex    bigint-metadata]
+      [real-regex      real-metadata]
+      [double-regex    double-metadata]
+      [decimal-regex   decimal-metadata]
+      [char-regex      char-metadata]
+      [text-regex      text-metadata]
+      [bytea-regex     bytea-metadata]
+      [timestamp-regex timestamp-metadata]
+      [date-regex      date-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
 
