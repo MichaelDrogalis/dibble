@@ -8,6 +8,7 @@
 (def real-regex     #"real")
 (def double-regex   #"double precision")
 (def decimal-regex  #"(decimal|numeric)")
+(def varchar-regex  #"(character varying|varchar)\((\d+)\)")
 
 (defn smallint-metadata [column description]
   {(keyword column)
@@ -45,6 +46,11 @@
     :min -1e65
     :max 1e65}})
 
+(defn varchar-metadata [column description]
+  {(keyword column)
+   {:type :string
+    :max-chars (read-string (nth description 2))}})
+
 (defn postgres-to-clj-type [[column data-type]]
   (first
    (filter
@@ -58,7 +64,8 @@
       [bigint-regex   bigint-metadata]
       [real-regex     real-metadata]
       [double-regex   double-metadata]
-      [decimal-regex  decimal-metadata]]))))
+      [decimal-regex  decimal-metadata]
+      [varchar-regex  varchar-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
 
