@@ -67,5 +67,5 @@
   (let [query (exec-raw (str "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name='" (name (:table args)) "'") :results)
         fields (map :column_name query)
         types (map :data_type query)]
-    (partition 2 (interleave fields types))))
+    (apply merge (map postgres-to-clj-type (partition 2 (interleave fields types))))))
 

@@ -10,7 +10,7 @@
 (defn random-integer [min max]
   (if (and (< min 0) (< max 0))
     (* -1 (random-integer (* -1 min) (* -1 max)))
-    (long (+ (* (rand) (inc (bigdec (- (bigint max) (bigint min))))) min))))
+    (long (+ (* (rand) (inc (- (bigint max) (bigint min)))) min))))
 
 (defn randomized-integer [column-map options]
   (generate-value-in-range column-map options random-integer))
