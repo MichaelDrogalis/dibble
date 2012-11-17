@@ -28,3 +28,7 @@
  (fact (postgres-to-clj-type [:name "character varying(10)"]) => {:name {:type :string :max-chars 10}})
  (fact (:type (:name (postgres-to-clj-type [:name "text"]))) => :string))
 
+(facts
+ "The Postgres bytea type is supported."
+ (fact (:type (:image (postgres-to-clj-type [:image "bytea"]))) => :binary))
+

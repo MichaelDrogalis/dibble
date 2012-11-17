@@ -10,6 +10,7 @@
 (def decimal-regex  #"(decimal|numeric)")
 (def char-regex     #"(char|character|character varying|varchar)\((\d+)\)")
 (def text-regex     #"text")
+(def bytea-regex    #"bytea")
 
 (defn smallint-metadata [column description]
   {(keyword column)
@@ -56,6 +57,12 @@
   {(keyword column)
    {:type :string}})
 
+(defn bytea-metadata [column description]
+  {(keyword column)
+   {:type :binary
+    :min 0
+    :max 255}})
+
 (defn postgres-to-clj-type [[column data-type]]
   (first
    (filter
@@ -71,7 +78,8 @@
       [double-regex   double-metadata]
       [decimal-regex  decimal-metadata]
       [char-regex     char-metadata]
-      [text-regex     text-metadata]]))))
+      [text-regex     text-metadata]
+      [bytea-regex    bytea-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
 
