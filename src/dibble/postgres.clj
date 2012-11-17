@@ -5,6 +5,7 @@
 (def smallint-regex #"smallint")
 (def integer-regex  #"integer")
 (def bigint-regex   #"bigint")
+(def real-regex     #"real")
 
 (defn smallint-metadata [column description]
   {(keyword column)
@@ -24,6 +25,12 @@
     :min -9223372036854775808
     :max 9223372036854775807}})
 
+(defn real-metadata [column description]
+  {(keyword column)
+   {:type :decimal
+    :min -9998
+    :max 9998}})
+
 (defn postgres-to-clj-type [[column data-type]]
   (first
    (filter
@@ -34,7 +41,8 @@
          (metadata-fn column description)))
      [[smallint-regex smallint-metadata]
       [integer-regex  integer-metadata]
-      [bigint-regex   bigint-metadata]]))))
+      [bigint-regex   bigint-metadata]
+      [real-regex     real-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
 

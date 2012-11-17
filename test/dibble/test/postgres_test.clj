@@ -8,3 +8,7 @@
  (fact (:type (:age (postgres-to-clj-type [:age "integer"]))) => :integer)
  (fact (:type (:age (postgres-to-clj-type [:age "bigint"]))) => :integer))
 
+(facts
+ "The Postgres real type is supported."
+ (fact (:type (:number (postgres-to-clj-type [:number "real"]))) => :decimal))
+
