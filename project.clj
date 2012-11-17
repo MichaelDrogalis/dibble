@@ -10,6 +10,7 @@
                  [korma "0.3.0-beta9"]
                  [mysql/mysql-connector-java "5.1.21"]
                  [postgresql "9.0-801.jdbc4"]
+                 [org.xerial/sqlite-jdbc "3.6.16"]
                  [org.clojure/math.numeric-tower "0.0.1"]
                  [clj-time "0.4.4"]
                  [log4j "1.2.15" :exclusions [javax.mail/mail
