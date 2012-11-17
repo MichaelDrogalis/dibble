@@ -1,4 +1,4 @@
-(ns dibble.postgresql
+(ns dibble.postgres
   (:require [korma.core :refer :all]
             [korma.db :refer :all]))
 
