@@ -13,6 +13,7 @@
 (def text-regex      #"text")
 (def bytea-regex     #"bytea")
 (def timestamp-regex #"timestamp without time zone")
+(def date-regex      #"date")
 
 (defn smallint-metadata [column description]
   {(keyword column)
@@ -68,8 +69,14 @@
 (defn timestamp-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time 1000 1 1 0 0 0)
-    :max (time/date-time 9999 1 1 23 59 59)}})
+    :min (time/date-time -4713471)
+    :max (time/date-time 294276)}})
+
+(defn date-metadata [column description]
+  {(keyword column)
+   {:type :datetime
+    :min (time/date-time -4713)
+    :max (time/date-time 5874897)}})
 
 (defn postgres-to-clj-type [[column data-type]]
   (first
@@ -88,7 +95,8 @@
       [char-regex      char-metadata]
       [text-regex      text-metadata]
       [bytea-regex     bytea-metadata]
-      [timestamp-regex timestamp-metadata]]))))
+      [timestamp-regex timestamp-metadata]
+      [date-regex      date-metadata]]))))
 
 (def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
 

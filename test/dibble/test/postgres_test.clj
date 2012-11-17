@@ -33,6 +33,7 @@
  (fact (:type (:image (postgres-to-clj-type [:image "bytea"]))) => :binary))
 
 (facts
- "The Postgres timestamp type is supported."
- (fact (:type (:when (postgres-to-clj-type [:when "timestamp without time zone"]))) => :datetime))
+ "The Postgres timestamp and date types are supported."
+ (fact (:type (:when (postgres-to-clj-type [:when "timestamp without time zone"]))) => :datetime)
+ (fact (:type (:when (postgres-to-clj-type [:when "date"]))) => :datetime))
 
