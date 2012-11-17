@@ -2,6 +2,7 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
             [dibble.mysql :as mysql]
+            [dibble.postgres :as postgres]
             [dibble.strings :refer :all]
             [dibble.numbers :refer :all]
             [dibble.time :refer :all]
@@ -19,6 +20,7 @@
 
 (defn parse-description [args]
   (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
+        (= (:vendor (:database args)) :postgres) (postgres/postgres-db args)
         :else (throw (Throwable. "Database :vendor not supported"))))
 
 (defn clean-table [table]
