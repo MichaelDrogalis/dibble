@@ -20,8 +20,11 @@
 
 (facts
  "The Postgres char, varchar, and text types are supported."
+ (fact (postgres-to-clj-type [:name "char(5)"]) => {:name {:type :string :max-chars 5}})
+ (fact (postgres-to-clj-type [:name "character(5)"]) => {:name {:type :string :max-chars 5}})
  (fact (postgres-to-clj-type [:name "varchar"]) => nil)
  (fact (postgres-to-clj-type [:name "varchar(1)"]) => {:name {:type :string :max-chars 1}})
  (fact (postgres-to-clj-type [:name "varchar(10)"]) => {:name {:type :string :max-chars 10}})
- (fact (postgres-to-clj-type [:name "character varying(10)"]) => {:name {:type :string :max-chars 10}}))
+ (fact (postgres-to-clj-type [:name "character varying(10)"]) => {:name {:type :string :max-chars 10}})
+ (fact (:type (:name (postgres-to-clj-type [:name "text"]))) => :string))
 
