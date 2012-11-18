@@ -13,5 +13,5 @@
   (let [query (exec-raw (str "PRAGMA table_info([" (name (:table args)) "]);") :results)
         fields (map :name query)
         types (map :type query)]
-    (apply merge (map sqlite3-to-clj-type (partition 2 (interleave fields types))))))
+    (merge (apply merge (map sqlite3-to-clj-type (partition 2 (interleave fields types)))) (:types args))))
 
