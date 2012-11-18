@@ -2,6 +2,7 @@
   (:require [korma.core :refer :all]
             [korma.db :refer :all]
             [dibble.mysql :as mysql]
+            [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
             [dibble.strings :refer :all]
             [dibble.numbers :refer :all]
@@ -20,6 +21,7 @@
 
 (defn parse-description [args]
   (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
+        (= (:vendor (:database args)) :postgres) (postgres/postgres-db args)
         (= (:vendor (:database args)) :sqlite3) (sqlite3/sqlite3-db args)
         :else (throw (Throwable. "Database :vendor not supported"))))
 
