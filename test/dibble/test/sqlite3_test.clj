@@ -81,3 +81,10 @@
  (fact (:type (:image (sqlite3-to-clj-type [:image "mediumblob"]))) => :binary)
  (fact (:type (:image (sqlite3-to-clj-type [:image "longblob"]))) => :binary))
 
+(facts
+ "User's can define the type map themselves due to SQLite3's dynamic type system."
+ (fact (merge {:name nil} {:name :integer}) => {:name :integer})
+ (fact (merge {:name :integer} {}) => {:name :integer})
+ (fact (merge {:zipcode :string} {:zipcode :integer}) => {:zipcode :integer})
+ (fact (merge {:name :string :age nil} {:age :decimal}) => {:name :string :age :decimal}))
+
