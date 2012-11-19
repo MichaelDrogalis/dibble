@@ -36,8 +36,9 @@
               <li><a href="#start">start</a></li>
               <li><a href="#values">value-of</a></li>
               <li><a href="#random">randomize</a></li>
-              <li><a href="#fk  ">inherit</a></li>
+              <li><a href="#fk">inherit</a></li>
               <li><a href="#options">options</a></li>
+              <li><a href="#override">overriding</a></li>
               <li><a href="#policies">policies</a></li>
               <li><a href="#support">support</a></li>
             </ul>
@@ -54,7 +55,7 @@
                                 <pre>
                 <code class="seed-code">
 (defproject ...
-  :dependencies [[dibble.core "0.1.2"]]
+  :dependencies [[dibble.core "0.1.3"]]
   ...)
                 </code>
             </pre>
@@ -302,7 +303,29 @@
             
             </div>
             </div>
+
+            <div class="row" id="override">
+            <div class="span9 well">
+            <h1>Type Overriding</h1>
             
+            <div class="row">
+                <div class="span7">
+                                <pre>
+                <code class="seed-code">
+(def db {:db "simulation" :user "" :password "" :vendor :sqlite3})
+(def type-map {:unknown_column_type {:type :integer :min 0 :max 10}})
+
+(seed-table {:database db :table :people :types type-map}
+  (randomized :unknown_column_type))
+                </code>
+            </pre>
+                </div>
+                <div class="span2 narrative">
+                    Type overriding let's you specify what Dibble type a column should map to. This is supported for SQLite3.
+                </div>
+            </div>
+            </div>
+            </div>            
             
             <div class="row" id="policies">
             <div class="span9 well">
@@ -372,9 +395,9 @@
                         <td>MySQL</td>
                         <td>Yes</td>
                     </tr>
-                    <tr class="warning">
+                    <tr class="success">
                         <td>Postgres</td>
-                        <td>In development</td>
+                        <td>Yes</td>
                     </tr>
                     <tr class="error">
                         <td>Oracle</td>
@@ -384,9 +407,13 @@
                         <td>MSSQL</td>
                         <td>Not yet implemented</td>
                     </tr>
-                    <tr class="warning">
+                    <tr class="success">
                         <td>SQLite3</td>
-                        <td>In development</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr class="error">
+                        <td>MongoDB</td>
+                        <td>Not yet implemented</td>
                     </tr>
                 </div>
                 </table>
@@ -490,6 +517,65 @@
                         <td>Not supported</td>
                     </tr>
                 </table>
+                <h3>Postgres support</h3>
+                <table class="table">
+                    <tr>
+                        <td>Postgres Type</td>
+                        <td>Maps to Dibble type</td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>varchar</code></td>
+                        <td><code>:string</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>integer</code></td>
+                        <td><code>:integer</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>double precision</code></td>
+                        <td><code>:decimal</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>decimal</code></td>
+                        <td><code>:decimal</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>numeric</code></td>
+                        <td><code>:decimal</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>char</code></td>
+                        <td><code>:string</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>text</code></td>
+                        <td><code>:string</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>smallint</code></td>
+                        <td><code>:integer</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>bigint</code></td>
+                        <td><code>:integer</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>date</code></td>
+                        <td><code>:datetime</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>timestamp</code></td>
+                        <td><code>:datetime</code></td>
+                    </tr>
+                    <tr class="success">
+                        <td><code>bytea</code></td>
+                        <td><code>:binary</code></td>
+                    </tr>
+                </table>
+                
+                <h3>SQLite3 Support</h3>
+                SQLite3's unique type system makes it harder, but not impossible to infer type information. The solution has been to infer column information if the column name matching any of the supported MySQL column types. If the column type can't be infered, Dibble will
+                look to the <code>:types</code> map to pick the correct type.
                 </div>
             </div>
             </div>
