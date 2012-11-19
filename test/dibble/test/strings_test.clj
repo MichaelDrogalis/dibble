@@ -2,7 +2,7 @@
   (:require [midje.sweet :refer :all]
             [dibble.strings :refer :all]))
 
-(def column {:type :string :max-chars 32})
+(def column {:type :string :min 0 :max 32})
 
 (fact (count (randomized-string column {:length 0})) => 0)
 (fact (count (randomized-string column {:length 1})) => 1)
@@ -29,3 +29,4 @@
 (fact (not-any? space?  (randomized-string column {:subtype :first-name})) => true)
 (fact (not-any? space? (randomized-string column {:subtype :last-name})) => true)
 (fact (count (filter space? (randomized-string column {:subtype :full-name}))) => 1)
+
