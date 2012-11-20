@@ -14,13 +14,6 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defn seed [& rules]
-  (fn [table-description]
-    (reduce
-     (fn [data-seed rule-fn]
-       (merge data-seed (rule-fn table-description)))
-     {} rules)))
-
 (defn parse-description [args]
   (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
         (= (:vendor (:database args)) :postgres) (postgres/postgres-db args)
@@ -93,16 +86,4 @@
   ([column value] (value-of column value {}))
   ([column value args]
      (select-value column args (constantly value))))
-
-(defseed pets
-  {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :pets}
-  (inherit :name))
-
-(defn any-number []
-  (rand-nth (range 1 10)))
-
-(seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :persons :dependents [:pets] :policy :clean-slate :n 5}
- (randomized :name {:subtype :full-name :fk {pets :name}})
- (value-of :number 10))
 
