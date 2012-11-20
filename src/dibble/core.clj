@@ -32,16 +32,6 @@
   (let [tables (conj (:dependents args) (:table args))]
     (cond (= (:policy args) :clean-slate) (dorun (map clean-table tables)))))
 
-(defn seed-table
-  ([bundled-args] (apply seed-table bundled-args))
-  ([args & seeds]
-     (let [table-description (parse-description args)]
-       (apply-policies args)
-       (dotimes [_ (:n args 1)]
-         (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
-           (parse-description args)
-           (insert (:table args) (values data)))))))
-
 (defn bequeath-value! [args data]
   (when (:fk args)
     (dorun (map
@@ -49,6 +39,19 @@
               (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
                                         (rest foreign-table))))
             (:fk args)))))
+
+(defn seed-table
+  ([bundled-args] (apply seed-table bundled-args))
+  ([args & seeds]
+     (let [table-description (parse-description args)]
+       (apply-policies args)
+       (dotimes [_ (:n args 1)]
+         (let [data (apply merge (map (fn [f] (f args table-description)) seeds))
+               seeds (:seeds data)
+               fks (:fks data)]
+           (parse-description args)
+           (insert (:table args) (values seeds))
+           (apply bequeath-value! fks))))))
 
 (defn- dispatch-type [constraints args]
   (let [data-type (:type constraints)]
@@ -65,8 +68,7 @@
       (fn [column args seeding-args table-description]
         (let [constraints (get table-description column)
               result (dispatch-type constraints args)]
-          (bequeath-value! args result)
-          {column result}))
+          {:seeds {column result} :fks [args result]}))
       column args)))
 
 (defn inherit
@@ -75,8 +77,7 @@
      (partial
       (fn [column args seeding-args table-description]
         (let [result (get (:autogen seeding-args) column)]
-          (bequeath-value! args result)
-          {column result}))
+          {:seeds {column result} :fks [args result]}))
       column args)))
 
 (defn with-fn
@@ -86,8 +87,7 @@
       (fn [column f args seeding-args table-description]
         (let [constraints (get table-description column)
               result (f)]
-          (bequeath-value! args result)
-          {column result}))
+          {:seeds {column result} :fks [args result]}))
       column f args)))
 
 (defn value-of
