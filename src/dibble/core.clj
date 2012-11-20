@@ -29,20 +29,20 @@
 
 (defn apply-external-policies [args]
   (if-not (empty? (:external-dependents args))
-    (dorun
+    (do
      (map
       (fn [dependent]
         (parse-description dependent)
-        (delete (:table dependent)))
+        (clean-table (:table dependent)))
       (:external-dependents args)))))
 
 (defn bequeath-value! [args data]
   (when (:fk args)
-    (dorun (map
-            (fn [[foreign-table foreign-column]]
-              (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
-                                        (rest foreign-table))))
-            (:fk args)))))
+    (do (map
+         (fn [[foreign-table foreign-column]]
+           (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
+                                     (rest foreign-table))))
+         (:fk args)))))
 
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
