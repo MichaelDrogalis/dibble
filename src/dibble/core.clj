@@ -58,7 +58,7 @@
            (insert (:table args) (values seed-data))
            (dorun (map #(apply bequeath-value! %) fk-data)))))))
 
-(defn- dispatch-type [constraints args]
+(defn dispatch-type [constraints args]
   (let [data-type (:type constraints)]
     (cond (= data-type :string) (randomized-string constraints args)
           (= data-type :integer) (randomized-integer constraints args)
@@ -77,20 +77,20 @@
   ([column] (randomized column {}))
   ([column args]
      (select-value column args
-                   (fn [column args table]
+                   (fn [column args table table-args]
                      (dispatch-type (get table column) args)))))
 
 (defn inherit
   ([column] (inherit column {}))
   ([column args]
      (select-value column args
-                   (fn [column _ table]
-                     (get (:autogen table) column)))))
+                   (fn [column _ table table-args]
+                     (get (:autogen table-args) column)))))
 
 (defn with-fn
   ([column f] (with-fn column f {}))
   ([column f args]
-     (select-value column args (fn [_ _ _] (f)))))
+     (select-value column args (fn [_ _ _ _] (f)))))
 
 (defn value-of
   ([column value] (value-of column value {}))
