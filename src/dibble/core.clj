@@ -25,11 +25,11 @@
 
 (defn apply-policies [args]
   (let [tables (conj (:dependents args) (:table args))]
-    (cond (= (:policy args) :clean-slate) (do (map clean-table tables)))))
+    (cond (= (:policy args) :clean-slate) (doall (map clean-table tables)))))
 
 (defn apply-external-policies [args]
   (if-not (empty? (:external-dependents args))
-    (do
+    (doall
      (map
       (fn [dependent]
         (parse-description dependent)
