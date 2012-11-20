@@ -15,9 +15,9 @@
   `(def ~seed-name [~args ~@rules]))
 
 (defn parse-description [args]
-  (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
+  (cond (= (:vendor (:database args)) :mysql)    (mysql/mysql-db args)
         (= (:vendor (:database args)) :postgres) (postgres/postgres-db args)
-        (= (:vendor (:database args)) :sqlite3) (sqlite3/sqlite3-db args)
+        (= (:vendor (:database args)) :sqlite3)  (sqlite3/sqlite3-db args)
         :else (throw (Throwable. "Database :vendor not supported"))))
 
 (defn clean-table [table]

@@ -1,6 +1,9 @@
 (ns dibble.test.core-test
   (:require [midje.sweet :refer :all]
             [clj-time.core :as time]
+            [dibble.mysql :as mysql]
+            [dibble.postgres :as postgres]
+            [dibble.sqlite3 :as sqlite3]
             [dibble.core :refer :all]))
 
 (facts
@@ -13,3 +16,13 @@
                              :min (time/date-time 2012)
                              :max (time/date-time 2013)} {}))
        => java.sql.Timestamp))
+
+(facts
+ "Database spec parsing returns a connection specific to each vendor."
+ (with-redefs [mysql/mysql-db (constantly :mysql-connection)
+               postgres/postgres-db (constantly :postgres-connection)
+               sqlite3/sqlite3-db (constantly :sqlite3-connection)]
+   (fact (parse-description {:database {:vendor :mysql}}) => :mysql-connection)
+   (fact (parse-description {:database {:vendor :postgres}}) => :postgres-connection)
+   (fact (parse-description {:database {:vendor :sqlite3}}) => :sqlite3-connection)))
+ 
