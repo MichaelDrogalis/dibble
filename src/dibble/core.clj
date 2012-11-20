@@ -39,6 +39,7 @@
        (apply-policies args)
        (dotimes [_ (:n args 1)]
          (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
+           (parse-description args)
            (insert (:table args) (values data)))))))
 
 (defn bequeath-value! [args data]

@@ -167,7 +167,12 @@
       [mediumblob-regex mediumblob-metadata]
       [longblob-regex   longblob-metadata]]))))
 
-(def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
+(def make-connection
+     (memoize
+      (fn [spec] (create-db (mysql spec)))))
+
+(defn connect-to-db [db-spec]
+  (default-connection (make-connection db-spec)))
 
 (defn mysql-db [args]
   (connect-to-db (:database args))
