@@ -27,22 +27,22 @@
 (def longblob-regex   #"longblob")
 
 (defn char-metadata [column description]
-  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+  {(keyword column) {:type :string :min 0 :max (read-string (nth description 1))}})
 
 (defn varchar-metadata [column description]
-  {(keyword column) {:type :string :max-chars (read-string (nth description 1))}})
+  {(keyword column) {:type :string :min 0 :max (read-string (nth description 1))}})
 
 (defn tinytext-metadata [column description]
-  {(keyword column) {:type :string :max-chars 255}})
+  {(keyword column) {:type :string :min 0 :max 255}})
 
 (defn text-metadata [column description]
-  {(keyword column) {:type :string :max-chars 65535}})
+  {(keyword column) {:type :string :min 0 :max 65535}})
 
 (defn mediumtext-metadata [column description]
-  {(keyword column) {:type :string :max-chars 16777215}})
+  {(keyword column) {:type :string :min 0 :max 16777215}})
 
 (defn longtext-metadata [column description]
-  {(keyword column) {:type :string :max-chars 4294967295}})
+  {(keyword column) {:type :string :min 0 :max 4294967295}})
 
 (defn tinyint-metadata [column description]
   {(keyword column) {:type :integer :min -128 :max 127}})
