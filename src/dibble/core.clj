@@ -41,11 +41,12 @@
      (let [table-description (parse-description args)]
        (apply-policies args)
        (dotimes [_ (:n args 1)]
-         (let [data (apply merge (map (fn [f] (f args table-description)) seeds))
-               seeds (:seeds data)
-               fks (:fks data)]
-           (insert (:table args) (values seeds))
-           (apply bequeath-value! fks))))))
+         (let [generated-data (map (fn [f] (f args table-description)) seeds)
+               seed-data (apply merge (map :seeds generated-data))
+               fk-data (map :fks generated-data)]
+           (parse-description args)
+           (insert (:table args) (values seed-data))
+           (dorun (map #(apply bequeath-value! %) fk-data)))))))
 
 (defn- dispatch-type [constraints args]
   (let [data-type (:type constraints)]
@@ -58,7 +59,7 @@
 (defn select-value [column args f]
   (partial
    (fn [column args table-args table-description]
-     (let [result (f column args table-description)]
+     (let [result (f column args table-description table-args)]
        {:seeds {column result} :fks [args result]}))
    column args))
 
