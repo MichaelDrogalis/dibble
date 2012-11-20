@@ -27,6 +27,15 @@
   (let [tables (conj (:dependents args) (:table args))]
     (cond (= (:policy args) :clean-slate) (dorun (map clean-table tables)))))
 
+(defn apply-external-policies [args]
+  (if-not (empty? (:external-dependents args))
+    (dorun
+     (map
+      (fn [dependent]
+        (parse-description dependent)
+        (delete (:table dependent)))
+      (:external-dependents args)))))
+
 (defn bequeath-value! [args data]
   (when (:fk args)
     (dorun (map
@@ -40,6 +49,7 @@
   ([args & seeds]
      (let [table-description (parse-description args)]
        (apply-policies args)
+       (apply-external-policies args)
        (dotimes [_ (:n args 1)]
          (let [generated-data (map (fn [f] (f args table-description)) seeds)
                seed-data (apply merge (map :seeds generated-data))
