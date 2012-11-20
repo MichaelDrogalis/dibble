@@ -25,4 +25,14 @@
    (fact (parse-description {:database {:vendor :mysql}}) => :mysql-connection)
    (fact (parse-description {:database {:vendor :postgres}}) => :postgres-connection)
    (fact (parse-description {:database {:vendor :sqlite3}}) => :sqlite3-connection)))
- 
+
+(facts
+ "The policy should be applied to the specified tables."
+ (with-redefs [clean-table identity]
+   (fact (apply-policies {:table :customers :policy :clean-slate}) => [:customers])
+   (fact (apply-policies {:policy :clean-slate}) => [nil])
+   (fact (apply-policies {:table :customers :policy :clean-slate :dependents []}) => [:customers])
+   (fact (into #{}
+               (apply-policies {:table :customers :policy :clean-slate :dependents [:pets]}))
+         => (into #{} [:customers :pets]))))
+
