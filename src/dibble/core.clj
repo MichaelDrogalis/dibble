@@ -9,6 +9,8 @@
             [dibble.time :refer :all]
             [dibble.binary :refer :all]))
 
+(declare seed-table)
+
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
@@ -65,7 +67,7 @@
   ([column] (randomized column {}))
   ([column args]
      (partial
-      (fn [column args seeding-args table-description]
+      (fn [column args table-args table-description]
         (let [constraints (get table-description column)
               result (dispatch-type constraints args)]
           {:seeds {column result} :fks [args result]}))
@@ -75,8 +77,8 @@
   ([column] (inherit column {}))
   ([column args]
      (partial
-      (fn [column args seeding-args table-description]
-        (let [result (get (:autogen seeding-args) column)]
+      (fn [column args table-args table-description]
+        (let [result (get (:autogen table-args) column)]
           {:seeds {column result} :fks [args result]}))
       column args)))
 
@@ -84,7 +86,7 @@
   ([column f] (with-fn column f {}))
   ([column f args]
      (partial
-      (fn [column f args seeding-args table-description]
+      (fn [column f args table-args table-description]
         (let [constraints (get table-description column)
               result (f)]
           {:seeds {column result} :fks [args result]}))
