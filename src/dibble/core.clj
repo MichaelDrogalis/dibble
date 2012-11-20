@@ -79,6 +79,17 @@
           {column result}))
       column args)))
 
+(defn with-fn
+  ([column f] (with-fn column f {}))
+  ([column f args]
+     (partial
+      (fn [column f args seeding-args table-description]
+        (let [constraints (get table-description column)
+              result (f)]
+          (bequeath-value! args result)
+          {column result}))
+      column f args)))
+
 (defn value-of
   ([column] (value-of column {} {}))
   ([column value] (value-of column value {}))
