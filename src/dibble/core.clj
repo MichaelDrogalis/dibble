@@ -62,43 +62,47 @@
           (= data-type :decimal) (randomized-decimal constraints args)
           (= data-type :datetime) (randomized-datetime constraints args)
           (= data-type :binary) (randomized-blob constraints args))))
-  
+
+(defn select-value [column args f]
+  (partial
+   (fn [column args table-args table-description]
+     (let [result (f column args table-args)]
+       {:seeds {column result} :fks [args result]}))
+   column args))
+
 (defn randomized
   ([column] (randomized column {}))
   ([column args]
-     (partial
-      (fn [column args table-args table-description]
-        (let [constraints (get table-description column)
-              result (dispatch-type constraints args)]
-          {:seeds {column result} :fks [args result]}))
-      column args)))
+     (select-value column args
+           (fn [column args table]
+             (dispatch-type (get table column) args)))))
 
 (defn inherit
   ([column] (inherit column {}))
   ([column args]
-     (partial
-      (fn [column args table-args table-description]
-        (let [result (get (:autogen table-args) column)]
-          {:seeds {column result} :fks [args result]}))
-      column args)))
+     (select-value column args
+           (fn [column _ table]
+             (get (:autogen table) column)))))
 
 (defn with-fn
   ([column f] (with-fn column f {}))
   ([column f args]
-     (partial
-      (fn [column f args table-args table-description]
-        (let [constraints (get table-description column)
-              result (f)]
-          {:seeds {column result} :fks [args result]}))
-      column f args)))
+     (select-value column args (fn [_ _ _] (f)))))
 
 (defn value-of
-  ([column] (value-of column {} {}))
   ([column value] (value-of column value {}))
   ([column value args]
-     (partial
-      (fn [column value args seeding-args table-description]
-        (bequeath-value! args value)
-        {column value})
-      column value args)))
+     (select-value column args (constantly value))))
+
+(defseed pets
+  {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :pets}
+  (inherit :name))
+
+(defn any-number []
+  (rand-nth (range 1 10)))
+
+(seed-table
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :persons :dependents [:pets] :policy :clean-slate :n 5}
+ (randomized :name {:subtype :full-name :fk {pets :name}})
+ (value-of :number 10))
 
