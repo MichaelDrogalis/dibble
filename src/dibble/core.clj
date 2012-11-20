@@ -44,7 +44,6 @@
          (let [data (apply merge (map (fn [f] (f args table-description)) seeds))
                seeds (:seeds data)
                fks (:fks data)]
-           (parse-description args)
            (insert (:table args) (values seeds))
            (apply bequeath-value! fks))))))
 
@@ -59,7 +58,7 @@
 (defn select-value [column args f]
   (partial
    (fn [column args table-args table-description]
-     (let [result (f column args table-args)]
+     (let [result (f column args table-description)]
        {:seeds {column result} :fks [args result]}))
    column args))
 
@@ -67,15 +66,15 @@
   ([column] (randomized column {}))
   ([column args]
      (select-value column args
-           (fn [column args table]
-             (dispatch-type (get table column) args)))))
+                   (fn [column args table]
+                     (dispatch-type (get table column) args)))))
 
 (defn inherit
   ([column] (inherit column {}))
   ([column args]
      (select-value column args
-           (fn [column _ table]
-             (get (:autogen table) column)))))
+                   (fn [column _ table]
+                     (get (:autogen table) column)))))
 
 (defn with-fn
   ([column f] (with-fn column f {}))
