@@ -13,7 +13,7 @@
 (defn- random-string [length]
   (let [low-ascii-char 97
         high-ascii-char 122
-        infinite-char-seq (repeatedly #(+ (rand-int (- high-ascii-char low-ascii-char)) low-ascii-char))]
+        infinite-char-seq (repeatedly #(random-integer low-ascii-char high-ascii-char))]
     (apply str (map char (take length infinite-char-seq)))))
 
 (defn randomized-string [column-map options]
