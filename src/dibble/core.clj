@@ -75,7 +75,6 @@
    column options))
 
 (defn randomized
-  ([column] (randomized column {}))
   ([column & {:as options}]
      (select-value
       column options
@@ -83,7 +82,6 @@
         (dispatch-type (get table-description column) options)))))
 
 (defn inherit
-  ([column] (inherit column {}))
   ([column & {:as options}]
      (select-value
       column options
@@ -95,7 +93,10 @@
      (select-value column options (fn [_ _ _ _] (f)))))  
 
 (defn value-of
-  ([column value] (value-of column value {}))
   ([column value & {:as options}]
      (select-value column options (constantly value))))
+
+(seed-table
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people}
+ (randomized :name))
 
