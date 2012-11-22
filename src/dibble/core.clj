@@ -75,25 +75,35 @@
 
 (defn randomized
   ([column] (randomized column {}))
-  ([column args]
-     (select-value column args
-                   (fn [column args table table-args]
-                     (dispatch-type (get table column) args)))))
+  ([column & {:as args}]
+     (partial
+      (fn [column args seeding-args table-description]
+        (let [constraints (get table-description column)
+              result (dispatch-type constraints args)]
+          (bequeath-value! args result)
+          {column result}))
+      column args)))
 
 (defn inherit
   ([column] (inherit column {}))
-  ([column args]
-     (select-value column args
-                   (fn [column _ table table-args]
-                     (get (:autogen table-args) column)))))
-
-(defn with-fn
-  ([column f] (with-fn column f {}))
-  ([column f args]
-     (select-value column args (fn [_ _ _ _] (f)))))
+  ([column & {:as args}]
+     (partial
+      (fn [column args seeding-args table-description]
+        (let [result (get (:autogen seeding-args) column)]
+          (bequeath-value! args result)
+          {column result}))
+      column args)))
 
 (defn value-of
   ([column value] (value-of column value {}))
-  ([column value args]
-     (select-value column args (constantly value))))
+  ([column value & {:as args}]
+     (partial
+      (fn [column value args seeding-args table-description]
+        (bequeath-value! args value)
+        {column value})
+      column value args)))
+
+(seed-table
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people :policy :clean-slate :n 5}
+ (randomized :name :subtype :full-name))
 
