@@ -66,40 +66,40 @@
           (= data-type :datetime) (randomized-datetime constraints args)
           (= data-type :binary) (randomized-blob constraints args))))
 
-(defn select-value [column args f]
+(defn select-value [column options f]
   (partial
-   (fn [column args table-args table-description]
-     (let [result (f column args table-description table-args)]
-       {:seeds {column result} :fks [args result]}))
-   column args))
+   (fn [column options table-args table-description]
+     (let [result (f column options table-description table-args)]
+       {:seeds {column result} :fks [options result]}))
+   column options))
 
 (defn randomized
   ([column] (randomized column {}))
-  ([column & {:as args}]
+  ([column & {:as options}]
      (partial
-      (fn [column args seeding-args table-description]
+      (fn [column options seeding-args table-description]
         (let [constraints (get table-description column)
-              result (dispatch-type constraints args)]
-          (bequeath-value! args result)
+              result (dispatch-type constraints options)]
+          (bequeath-value! options result)
           {column result}))
-      column args)))
+      column options)))
 
 (defn inherit
   ([column] (inherit column {}))
-  ([column & {:as args}]
+  ([column & {:as options}]
      (partial
-      (fn [column args seeding-args table-description]
+      (fn [column options seeding-args table-description]
         (let [result (get (:autogen seeding-args) column)]
-          (bequeath-value! args result)
+          (bequeath-value! options result)
           {column result}))
-      column args)))
+      column options)))
 
 (defn value-of
   ([column value] (value-of column value {}))
-  ([column value & {:as args}]
+  ([column value & {:as options}]
      (partial
-      (fn [column value args seeding-args table-description]
-        (bequeath-value! args value)
+      (fn [column value options seeding-args table-description]
+        (bequeath-value! options value)
         {column value})
-      column value args)))
+      column value options)))
 
