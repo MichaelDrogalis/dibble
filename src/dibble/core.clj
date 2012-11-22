@@ -70,29 +70,25 @@
   (partial
    (fn [column options table-args table-description]
      (let [result (f column options table-description table-args)]
+       (bequeath-value! options result)
        {:seeds {column result} :fks [options result]}))
    column options))
 
 (defn randomized
   ([column] (randomized column {}))
   ([column & {:as options}]
-     (partial
-      (fn [column options seeding-args table-description]
-        (let [constraints (get table-description column)
-              result (dispatch-type constraints options)]
-          (bequeath-value! options result)
-          {column result}))
-      column options)))
+     (select-value
+      column options
+      (fn [column options table-description _]
+        (dispatch-type (get table-description column) options)))))
 
 (defn inherit
   ([column] (inherit column {}))
   ([column & {:as options}]
-     (partial
-      (fn [column options seeding-args table-description]
-        (let [result (get (:autogen seeding-args) column)]
-          (bequeath-value! options result)
-          {column result}))
-      column options)))
+     (select-value
+      column options
+      (fn [column _ table-description _]
+        (get (:autogen table-description) column)))))
 
 (defn value-of
   ([column value] (value-of column value {}))
