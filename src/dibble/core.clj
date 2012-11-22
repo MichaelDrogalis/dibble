@@ -103,7 +103,3 @@
         {column value})
       column value args)))
 
-(seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people :policy :clean-slate :n 5}
- (randomized :name :subtype :full-name))
-
