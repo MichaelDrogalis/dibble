@@ -90,12 +90,12 @@
       (fn [column _ table-description _]
         (get (:autogen table-description) column)))))
 
+(defn with-fn
+  ([column f & {:as options}]
+     (select-value column options (fn [_ _ _ _] (f)))))  
+
 (defn value-of
   ([column value] (value-of column value {}))
   ([column value & {:as options}]
-     (partial
-      (fn [column value options seeding-args table-description]
-        (bequeath-value! options value)
-        {column value})
-      column value options)))
+     (select-value column options (constantly value))))
 
