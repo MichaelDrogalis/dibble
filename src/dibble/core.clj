@@ -21,6 +21,12 @@
           (= vendor :sqlite3)  (sqlite3/sqlite3-db args)
           :else (throw (Throwable. (str "Database :vendor " vendor " not supported"))))))
 
+(defmacro with-connection [args & exprs]
+  `(let [previous-connection# default-connection]
+     (parse-description ~args)
+     ~@exprs
+     (default-connection previous-connection#)))
+
 (defn clean-table [table]
   (delete table))
 
@@ -33,8 +39,8 @@
     (doall
      (map
       (fn [dependent]
-        (parse-description dependent)
-        (clean-table (:table dependent)))
+        (with-connection args
+          (clean-table (:table dependent))))
       (:external-dependents args)))))
 
 (defn bequeath-value! [args data]
@@ -55,9 +61,9 @@
          (let [generated-data (map (fn [f] (f args table-description)) seeds)
                seed-data (apply merge (map :seeds generated-data))
                fk-data (map :fks generated-data)]
-           (parse-description args)
-           (insert (:table args) (values seed-data))
-           (dorun (map #(apply bequeath-value! %) fk-data)))))))
+           (with-connection args
+             (insert (:table args) (values seed-data))
+             (dorun (map #(apply bequeath-value! %) fk-data))))))))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)]
@@ -98,6 +104,6 @@
      (select-value column options (constantly value))))
 
 (seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people}
- (randomized :name))
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people :policy :clean-slate :n 10}
+ (randomized :name :subtype :full-name))
 

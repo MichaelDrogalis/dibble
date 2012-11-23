@@ -36,9 +36,4 @@
                (apply-policies {:table :customers :policy :clean-slate :dependents [:pets]}))
          => (into #{} [:customers :pets]))))
 
-(facts
- "External policies should switch database connections for execution."
- (with-redefs [parse-description identity
-               clean-table identity]
-   (fact (apply-external-policies {:external-dependents [{:table :customers} {:table :pets}]}) => [:customers :pets])))
  
