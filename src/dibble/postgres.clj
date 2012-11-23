@@ -98,7 +98,11 @@
       [timestamp-regex timestamp-metadata]
       [date-regex      date-metadata]]))))
 
-(def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
+(def make-connection
+  (memoize (fn [spec] (create-db (postgres spec)))))
+
+(defn connect-to-db [db-spec]
+  (default-connection (make-connection db-spec)))
 
 (defn postgres-db [args]
   (let [query (exec-raw (str "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name='" (name (:table args)) "'") :results)

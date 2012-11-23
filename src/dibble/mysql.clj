@@ -168,9 +168,7 @@
       [longblob-regex   longblob-metadata]]))))
 
 (def make-connection
-  (memoize
-   (fn [spec]
-     (create-db (mysql spec)))))
+  (memoize (fn [spec] (create-db (mysql spec)))))
 
 (defn connect-to-db [db-spec]
   (default-connection (make-connection db-spec)))

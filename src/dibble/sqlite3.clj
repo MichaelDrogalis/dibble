@@ -3,7 +3,11 @@
             [korma.db :refer :all]
             [dibble.mysql :as mysql]))
 
-(def connect-to-db (memoize #(default-connection (create-db (sqlite3 %)))))
+(def make-connection
+  (memoize (fn [spec] (create-db (sqlite3 spec)))))
+
+(defn connect-to-db [db-spec]
+  (default-connection (make-connection db-spec)))
 
 (defn sqlite3-to-clj-type [type-data]
   (mysql/mysql-to-clj-type type-data))
