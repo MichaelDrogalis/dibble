@@ -60,17 +60,17 @@
 
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
-  ([args & seeds]
+  ([args & rows]
      (with-connection args
        (let [table-structure (table-description args)]
          (apply-policies! args)
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
-           (let [generated-data (map (fn [f] (f args table-structure)) seeds)
-                 seed-data (apply merge (map :seeds generated-data))
-                 fk-data (map :fks generated-data)]
-             (insert (:table args) (values seed-data))
-             (dorun (map #(apply bequeath-value! %) fk-data))))))))
+           (let [generation (map (fn [f] (f args table-structure)) rows)
+                 seeds (apply merge (map :seeds generation))
+                 fks (map :fks generation)]
+             (insert (:table args) (values seeds))
+             (dorun (map #(apply bequeath-value! %) fks))))))))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
