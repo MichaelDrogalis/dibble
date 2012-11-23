@@ -66,12 +66,13 @@
              (dorun (map #(apply bequeath-value! %) fk-data))))))))
 
 (defn dispatch-type [constraints args]
-  (let [data-type (:type constraints)]
-    (cond (= data-type :string) (randomized-string constraints args)
-          (= data-type :integer) (randomized-integer constraints args)
-          (= data-type :decimal) (randomized-decimal constraints args)
-          (= data-type :datetime) (randomized-datetime constraints args)
-          (= data-type :binary) (randomized-blob constraints args))))
+  (let [data-type (:type constraints)
+        f (cond (= data-type :string)   randomized-string
+                (= data-type :integer)  randomized-integer
+                (= data-type :decimal)  randomized-decimal
+                (= data-type :datetime) randomized-datetime
+                (= data-type :binary)   randomized-blob)]
+    (f constraints args)))
 
 (defn select-value [column options f]
   (partial
@@ -104,6 +105,7 @@
      (select-value column options (constantly value))))
 
 (seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people :policy :clean-slate :n 10}
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql}
+  :table :people :policy :clean-slate :n 10}
  (randomized :name :subtype :full-name))
 
