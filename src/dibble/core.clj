@@ -37,11 +37,11 @@
 (defn clean-table [table]
   (delete table))
 
-(defn apply-policies [args]
+(defn apply-policies! [args]
   (let [tables (conj (:dependents args) (:table args))]
     (cond (= (:policy args) :clean-slate) (doall (map clean-table tables)))))
 
-(defn apply-external-policies [args]
+(defn apply-external-policies! [args]
   (if-not (empty? (:external-dependents args))
     (doall
      (map
@@ -63,8 +63,8 @@
   ([args & seeds]
      (with-connection args
        (let [table-structure (table-description args)]
-         (apply-policies args)
-         (apply-external-policies args)
+         (apply-policies! args)
+         (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
            (let [generated-data (map (fn [f] (f args table-structure)) seeds)
                  seed-data (apply merge (map :seeds generated-data))

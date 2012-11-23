@@ -29,11 +29,11 @@
 (facts
  "The policy should be applied to the specified tables."
  (with-redefs [clean-table identity]
-   (fact (apply-policies {:table :customers :policy :clean-slate}) => [:customers])
-   (fact (apply-policies {:policy :clean-slate}) => [nil])
-   (fact (apply-policies {:table :customers :policy :clean-slate :dependents []}) => [:customers])
+   (fact (apply-policies! {:table :customers :policy :clean-slate}) => [:customers])
+   (fact (apply-policies! {:policy :clean-slate}) => [nil])
+   (fact (apply-policies! {:table :customers :policy :clean-slate :dependents []}) => [:customers])
    (fact (into #{}
-               (apply-policies {:table :customers :policy :clean-slate :dependents [:pets]}))
+               (apply-policies! {:table :customers :policy :clean-slate :dependents [:pets]}))
          => (into #{} [:customers :pets]))))
 
  
