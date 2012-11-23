@@ -16,13 +16,12 @@
         infinite-char-seq (repeatedly #(random-integer low-ascii-char high-ascii-char))]
     (apply str (map char (take length infinite-char-seq)))))
 
-(defn randomized-string [column-map options]
-  (let [{:keys [min max length subtype]} (merge column-map options)]
-    (cond (= subtype :first-name) (random-first-name)
-          (= subtype :last-name) (random-last-name)
-          (= subtype :full-name) (str (random-first-name) " " (random-last-name))
-          (not (nil? length)) (random-string length)
-          :else (random-string (random-integer min max)))))
+(defn randomized-string [{:keys [min max length subtype]}]
+  (cond (= subtype :first-name) (random-first-name)
+        (= subtype :last-name) (random-last-name)
+        (= subtype :full-name) (str (random-first-name) " " (random-last-name))
+        (not (nil? length)) (random-string length)
+        :else (random-string (random-integer min max))))
 
 (def first-names
      ["Isabella"

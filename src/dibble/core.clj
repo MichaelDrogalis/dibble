@@ -80,7 +80,7 @@
                 (= data-type :decimal)  randomized-decimal
                 (= data-type :datetime) randomized-datetime
                 (= data-type :binary)   randomized-blob)]
-    (f constraints args)))
+    (f (merge constraints args))))
 
 (defn select-value [column options f]
   (partial

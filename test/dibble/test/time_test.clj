@@ -6,7 +6,6 @@
 
 (fact
  (let [dt (randomized-datetime
-           {}
            {:min (time/date-time 2012 1 4)
             :max (time/date-time 2012 1 6)})]
    (and (time/before? (from-date dt) (time/date-time 2012 1 7))
@@ -15,7 +14,6 @@
 
 (fact
  (from-date (randomized-datetime
-             {}
              {:min (time/date-time 2012 1 4)
               :max (time/date-time 2012 1 4)}))
  => (time/date-time 2012 1 4))
