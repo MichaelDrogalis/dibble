@@ -21,9 +21,16 @@
           (= vendor :sqlite3)  (sqlite3/sqlite3-db args)
           :else (throw (Throwable. (str "Database :vendor " vendor " not supported"))))))
 
+(defn make-connection [{:keys [database] :as args}]
+  (let [vendor (:vendor database)]
+    (cond (= vendor :mysql)    (mysql/connect-to-db database)
+          (= vendor :postgres) (postgres/connect-to-db database)
+          (= vendor :sqlite3)  (sqlite3/connect-to-db database)
+          :else (throw (Throwable. (str "Database :vendor " vendor " not supported"))))))
+
 (defmacro with-connection [args & exprs]
   `(let [previous-connection# default-connection]
-     (table-description ~args)
+     (make-connection ~args)
      ~@exprs
      (default-connection previous-connection#)))
 
@@ -54,14 +61,14 @@
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & seeds]
-     (let [table-structure (table-description args)]
-       (apply-policies args)
-       (apply-external-policies args)
-       (dotimes [_ (:n args 1)]
-         (let [generated-data (map (fn [f] (f args table-structure)) seeds)
-               seed-data (apply merge (map :seeds generated-data))
-               fk-data (map :fks generated-data)]
-           (with-connection args
+     (with-connection args
+       (let [table-structure (table-description args)]
+         (apply-policies args)
+         (apply-external-policies args)
+         (dotimes [_ (:n args 1)]
+           (let [generated-data (map (fn [f] (f args table-structure)) seeds)
+                 seed-data (apply merge (map :seeds generated-data))
+                 fk-data (map :fks generated-data)]
              (insert (:table args) (values seed-data))
              (dorun (map #(apply bequeath-value! %) fk-data))))))))
 
@@ -107,5 +114,5 @@
 (seed-table
  {:database {:db "simulation" :user "root" :password "" :vendor :mysql}
   :table :people :policy :clean-slate :n 10}
- (randomized :name :subtype :full-name))
+ (randomized :name :length 16))
 

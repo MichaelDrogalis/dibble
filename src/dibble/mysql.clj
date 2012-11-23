@@ -168,14 +168,14 @@
       [longblob-regex   longblob-metadata]]))))
 
 (def make-connection
-     (memoize
-      (fn [spec] (create-db (mysql spec)))))
+  (memoize
+   (fn [spec]
+     (create-db (mysql spec)))))
 
 (defn connect-to-db [db-spec]
   (default-connection (make-connection db-spec)))
 
 (defn mysql-db [args]
-  (connect-to-db (:database args))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
