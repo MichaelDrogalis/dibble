@@ -34,21 +34,19 @@
      ~@exprs
      (default-connection previous-connection#)))
 
-(defn clean-table [table]
+(defn clean-table! [table]
   (delete table))
 
 (defn apply-policies! [args]
   (let [tables (conj (:dependents args) (:table args))]
-    (cond (= (:policy args) :clean-slate) (doall (map clean-table tables)))))
+    (cond (= (:policy args) :clean-slate) (doall (map clean-table! tables)))))
 
 (defn apply-external-policies! [args]
   (if-not (empty? (:external-dependents args))
-    (doall
-     (map
-      (fn [dependent]
-        (with-connection args
-          (clean-table (:table dependent))))
-      (:external-dependents args)))))
+    (doall (map (fn [dependent]
+                  (with-connection args
+                    (clean-table! (:table dependent))))
+                (:external-dependents args)))))
 
 (defn bequeath-value! [args data]
   (when (:fk args)
@@ -58,6 +56,13 @@
                                      (rest foreign-table))))
          (:fk args)))))
 
+(defn insert-data! [args rows table-structure]
+  (let [generation (map (fn [f] (f args table-structure)) rows)
+        seeds (apply merge (map :seeds generation))
+        fks (map :fks generation)]
+    (insert (:table args) (values seeds))
+    (dorun (map #(apply bequeath-value! %) fks))))
+
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & rows]
@@ -66,11 +71,7 @@
          (apply-policies! args)
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
-           (let [generation (map (fn [f] (f args table-structure)) rows)
-                 seeds (apply merge (map :seeds generation))
-                 fks (map :fks generation)]
-             (insert (:table args) (values seeds))
-             (dorun (map #(apply bequeath-value! %) fks))))))))
+           (insert-data! args rows table-structure))))))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
