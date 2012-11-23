@@ -22,9 +22,9 @@
  (with-redefs [mysql/mysql-db (constantly :mysql-connection)
                postgres/postgres-db (constantly :postgres-connection)
                sqlite3/sqlite3-db (constantly :sqlite3-connection)]
-   (fact (parse-description {:database {:vendor :mysql}}) => :mysql-connection)
-   (fact (parse-description {:database {:vendor :postgres}}) => :postgres-connection)
-   (fact (parse-description {:database {:vendor :sqlite3}}) => :sqlite3-connection)))
+   (fact (table-description {:database {:vendor :mysql}}) => :mysql-connection)
+   (fact (table-description {:database {:vendor :postgres}}) => :postgres-connection)
+   (fact (table-description {:database {:vendor :sqlite3}}) => :sqlite3-connection)))
 
 (facts
  "The policy should be applied to the specified tables."
