@@ -14,7 +14,7 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defn parse-description [{:keys [database] :as args}]
+(defn table-description [{:keys [database] :as args}]
   (let [vendor (:vendor database)]
     (cond (= vendor :mysql)    (mysql/mysql-db args)
           (= vendor :postgres) (postgres/postgres-db args)
@@ -23,7 +23,7 @@
 
 (defmacro with-connection [args & exprs]
   `(let [previous-connection# default-connection]
-     (parse-description ~args)
+     (table-description ~args)
      ~@exprs
      (default-connection previous-connection#)))
 
@@ -54,11 +54,11 @@
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & seeds]
-     (let [table-description (parse-description args)]
+     (let [table-structure (table-description args)]
        (apply-policies args)
        (apply-external-policies args)
        (dotimes [_ (:n args 1)]
-         (let [generated-data (map (fn [f] (f args table-description)) seeds)
+         (let [generated-data (map (fn [f] (f args table-structure)) seeds)
                seed-data (apply merge (map :seeds generated-data))
                fk-data (map :fks generated-data)]
            (with-connection args
@@ -76,8 +76,8 @@
 
 (defn select-value [column options f]
   (partial
-   (fn [column options table-args table-description]
-     (let [result (f column options table-description table-args)]
+   (fn [column options table-args table-structure]
+     (let [result (f column options table-structure table-args)]
        (bequeath-value! options result)
        {:seeds {column result} :fks [options result]}))
    column options))
@@ -86,15 +86,15 @@
   ([column & {:as options}]
      (select-value
       column options
-      (fn [column options table-description _]
-        (dispatch-type (get table-description column) options)))))
+      (fn [column options table-structure _]
+        (dispatch-type (get table-structure column) options)))))
 
 (defn inherit
   ([column & {:as options}]
      (select-value
       column options
-      (fn [column _ table-description _]
-        (get (:autogen table-description) column)))))
+      (fn [column _ table-structure _]
+        (get (:autogen table-structure) column)))))
 
 (defn with-fn
   ([column f & {:as options}]
