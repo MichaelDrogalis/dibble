@@ -61,8 +61,8 @@
   (when (:fk args)
     (do (map
          (fn [[foreign-table foreign-column]]
-           (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
-                                     (rest foreign-table))))
+           (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
+             (apply seed-table (concat gen-args (rest foreign-table)))))
          (:fk args)))))
 
 (defn insert-data! [args rows table-structure]
