@@ -4,7 +4,7 @@
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
-            [dibble.random :refer :all]))
+            [dibble.random :as random]))
 
 (declare seed-table)
 
@@ -86,11 +86,11 @@
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
-        f (cond (= data-type :string)   randomized-string
-                (= data-type :integer)  randomized-integer
-                (= data-type :decimal)  randomized-decimal
-                (= data-type :datetime) randomized-datetime
-                (= data-type :binary)   randomized-blob)]
+        f (cond (= data-type :string)   random/randomized-string
+                (= data-type :integer)  random/randomized-integer
+                (= data-type :decimal)  random/randomized-decimal
+                (= data-type :datetime) random/randomized-datetime
+                (= data-type :binary)   random/randomized-blob)]
     (f (merge constraints args))))
 
 (defn select-value [column options f]
