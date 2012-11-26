@@ -4,10 +4,7 @@
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
-            [dibble.strings :refer :all]
-            [dibble.numbers :refer :all]
-            [dibble.time :refer :all]
-            [dibble.binary :refer :all]))
+            [dibble.random :refer :all]))
 
 (declare seed-table)
 

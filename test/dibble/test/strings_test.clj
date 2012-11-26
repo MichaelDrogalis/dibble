@@ -1,6 +1,6 @@
 (ns dibble.test.strings-test
   (:require [midje.sweet :refer :all]
-            [dibble.strings :refer :all]))
+            [dibble.random :refer :all]))
 
 (def column {:type :string :min 0 :max 32})
 

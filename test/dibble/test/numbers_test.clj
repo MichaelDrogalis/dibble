@@ -1,6 +1,6 @@
 (ns dibble.test.numbers-test
   (:require [midje.sweet :refer :all]
-            [dibble.numbers :refer :all]))
+            [dibble.random :refer :all]))
 
 (def integer-column {:type :integer :min -10 :max 10})
 (def double-column {:type :double :min -1.0 :max 1.0})
