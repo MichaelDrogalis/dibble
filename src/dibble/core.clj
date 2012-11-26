@@ -39,10 +39,10 @@
           (= vendor :postgres (Postgres.))
           (= vendor :sqlite3 (SQLite3.)))))
 
-(defmacro with-connection [args & exprs]
+(defmacro with-connection [vendor-record args & exprs]
   `(let [args# ~args
          previous-connection# default-connection]
-     (connect (vendor args#) args#)
+     (connect ~vendor-record args#)
      ~@exprs
      (default-connection previous-connection#)))
 
@@ -78,12 +78,13 @@
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & rows]
-     (with-connection args
-       (let [table-structure (describe-table (vendor args) args)]
-         (apply-policies! args)
-         (apply-external-policies! args)
-         (dotimes [_ (:n args 1)]
-           (insert-data! args rows table-structure))))))
+     (let [vendor-record (vendor args)]
+       (with-connection vendor-record args
+         (let [table-structure (describe-table vendor-record args)]
+           (apply-policies! args)
+           (apply-external-policies! args)
+           (dotimes [_ (:n args 1)]
+             (insert-data! args rows table-structure)))))))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
