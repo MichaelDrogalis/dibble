@@ -18,15 +18,6 @@
        => java.sql.Timestamp))
 
 (facts
- "Database spec parsing returns a connection specific to each vendor."
- (with-redefs [mysql/mysql-db (constantly :mysql-connection)
-               postgres/postgres-db (constantly :postgres-connection)
-               sqlite3/sqlite3-db (constantly :sqlite3-connection)]
-   (fact (table-description {:database {:vendor :mysql}}) => :mysql-connection)
-   (fact (table-description {:database {:vendor :postgres}}) => :postgres-connection)
-   (fact (table-description {:database {:vendor :sqlite3}}) => :sqlite3-connection)))
-
-(facts
  "The policy should be applied to the specified tables."
  (with-redefs [clean-table! identity]
    (fact (apply-policies! {:table :customers :policy :clean-slate}) => [:customers])
