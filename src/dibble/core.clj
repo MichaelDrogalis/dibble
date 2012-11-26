@@ -14,23 +14,35 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defn table-description [{:keys [database] :as args}]
-  (let [vendor (:vendor database)]
-    (cond (= vendor :mysql)    (mysql/mysql-db args)
-          (= vendor :postgres) (postgres/postgres-db args)
-          (= vendor :sqlite3)  (sqlite3/sqlite3-db args)
-          :else (throw (Throwable. (str "Database :vendor " vendor " not supported"))))))
+(defprotocol PersistentConnection
+  (connect [this args])
+  (describe-table [this args]))
 
-(defn make-connection [{:keys [database] :as args}]
+(defrecord MySQL []
+  PersistentConnection
+  (connect [_ args] (mysql/connect-to-db (:database args)))
+  (describe-table [_ args] (mysql/mysql-db args)))
+
+(defrecord Postgres []
+  PersistentConnection
+  (connect [_ args] (postgres/connect-to-db (:database args)))
+  (describe-table [_ args] (postgres/postgres-db args)))
+
+(defrecord SQLite3 []
+  PersistentConnection
+  (connect [_ args] (sqlite3/connect-to-db (:database args)))
+  (describe-table [_ args] (sqlite3/sqlite3-db args)))
+
+(defn vendor [{:keys [database]}]
   (let [vendor (:vendor database)]
-    (cond (= vendor :mysql)    (mysql/connect-to-db database)
-          (= vendor :postgres) (postgres/connect-to-db database)
-          (= vendor :sqlite3)  (sqlite3/connect-to-db database)
-          :else (throw (Throwable. (str "Database :vendor " vendor " not supported"))))))
+    (cond (= vendor :mysql) (MySQL.)
+          (= vendor :postgres (Postgres.))
+          (= vendor :sqlite3 (SQLite3.)))))
 
 (defmacro with-connection [args & exprs]
-  `(let [previous-connection# default-connection]
-     (make-connection ~args)
+  `(let [args# ~args
+         previous-connection# default-connection]
+     (connect (vendor args#) args#)
      ~@exprs
      (default-connection previous-connection#)))
 
@@ -67,7 +79,7 @@
   ([bundled-args] (apply seed-table bundled-args))
   ([args & rows]
      (with-connection args
-       (let [table-structure (table-description args)]
+       (let [table-structure (describe-table (vendor args) args)]
          (apply-policies! args)
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
@@ -113,7 +125,6 @@
      (select-value column options (constantly value))))
 
 (seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql}
-  :table :people :policy :clean-slate :n 10}
- (randomized :name :length 16))
+ {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people}
+ (randomized :name))
 
