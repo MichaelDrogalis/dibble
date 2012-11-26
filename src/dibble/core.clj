@@ -1,6 +1,6 @@
 (ns dibble.core
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
+  (:require [korma.core :refer [insert delete values]]
+            [korma.db :refer [default-connection]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
