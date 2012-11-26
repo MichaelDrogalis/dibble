@@ -124,5 +124,5 @@
 
 (seed-table
  {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people}
- (randomized :name))
+ (randomized :name :subtype :full-name))
 
