@@ -1,6 +1,6 @@
 (ns dibble.sqlite3
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
+  (:require [korma.core :refer [exec-raw]]
+            [korma.db :refer [create-db sqlite3 default-connection]]
             [dibble.mysql :as mysql]))
 
 (def make-connection

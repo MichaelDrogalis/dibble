@@ -1,7 +1,7 @@
 (ns dibble.postgres
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
-            [clj-time.core :as time]))
+  (:require [korma.core :refer [exec-raw]]
+            [korma.db :refer [create-db postgres default-connection]]
+            [clj-time.core :refer [date-time]]))
 
 (def smallint-regex  #"smallint")
 (def integer-regex   #"integer")
@@ -69,14 +69,14 @@
 (defn timestamp-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time -4713471)
-    :max (time/date-time 294276)}})
+    :min (date-time -4713471)
+    :max (date-time 294276)}})
 
 (defn date-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time -4713)
-    :max (time/date-time 5874897)}})
+    :min (date-time -4713)
+    :max (date-time 5874897)}})
 
 (defn postgres-to-clj-type [[column data-type]]
   (first
