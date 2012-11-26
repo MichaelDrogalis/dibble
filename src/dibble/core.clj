@@ -57,13 +57,14 @@
                     (clean-table! (:table dependent))))
                 (:external-dependents args)))))
 
-(defn bequeath-value! [args data]
-  (when (:fk args)
-    (do (map
-         (fn [[foreign-table foreign-column]]
-           (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
-             (apply seed-table (concat gen-args (rest foreign-table)))))
-         (:fk args)))))
+(defn bequeath-value! [{:keys [fk] :as args} data]
+  (when fk
+    (do
+      (map
+       (fn [[foreign-table foreign-column]]
+         (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
+           (apply seed-table (concat gen-args (rest foreign-table)))))
+       fk))))
 
 (defn insert-data! [args rows table-structure]
   (let [generation (map (fn [f] (f args table-structure)) rows)
