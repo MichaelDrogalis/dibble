@@ -1,6 +1,6 @@
 (ns dibble.test.numbers-test
   (:require [midje.sweet :refer :all]
-            [dibble.numbers :refer :all]))
+            [dibble.random :refer :all]))
 
 (def integer-column {:type :integer :min -10 :max 10})
 (def double-column {:type :double :min -1.0 :max 1.0})
@@ -11,19 +11,19 @@
 (fact (some #{(random-integer -10 -5)} (range -10 -4)) =not=> nil)
 (fact (some #{(random-integer -6 -6)} (list -6)) =not=> nil)
 
-(fact (>= (randomized-integer integer-column {:min 0}) 0) => true)
-(fact (>= (randomized-integer integer-column {:min 5}) 5) => true)
-(fact (<= (randomized-integer integer-column {:max 0}) 0) => true)
-(fact (<= (randomized-integer integer-column {:max 5}) 5) => true)
+(fact (>= (randomized-integer (merge integer-column {:min 0})) 0) => true)
+(fact (>= (randomized-integer (merge integer-column {:min 5})) 5) => true)
+(fact (<= (randomized-integer (merge integer-column {:max 0})) 0) => true)
+(fact (<= (randomized-integer (merge integer-column {:max 5})) 5) => true)
 
-(fact (randomized-integer integer-column {:min 5 :max 5}) => 5)
-(fact (some #{(randomized-integer integer-column {:min 5 :max 6})} (range 5 7)) =not=> nil)
+(fact (randomized-integer (merge integer-column {:min 5 :max 5})) => 5)
+(fact (some #{(randomized-integer (merge integer-column {:min 5 :max 6}))} (range 5 7)) =not=> nil)
 
-(fact (float? (randomized-decimal double-column {})) => true)
+(fact (float? (randomized-decimal double-column)) => true)
 
-(fact (>= (randomized-decimal double-column {:min 3.14 :max 3.25}) 3.14) => true)
-(fact (<= (randomized-decimal double-column {:min 3.14 :max 3.25}) 3.25) => true)
+(fact (>= (randomized-decimal (merge double-column {:min 3.14 :max 3.25})) 3.14) => true)
+(fact (<= (randomized-decimal (merge double-column {:min 3.14 :max 3.25})) 3.25) => true)
 
 (fact (#(and (>= % 1.23) (<= % 2.01))
-       (randomized-decimal double-column {:min 1.23 :max 2.01})) => true)
+       (randomized-decimal (merge double-column {:min 1.23 :max 2.01}))) => true)
 

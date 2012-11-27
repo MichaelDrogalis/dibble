@@ -1,7 +1,7 @@
 (ns dibble.mysql
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
-            [clj-time.core :as time]))
+  (:require [korma.core :refer [exec-raw]]
+            [korma.db :refer [create-db mysql default-connection]]
+            [clj-time.core :refer [date-time]]))
 
 (def char-regex       #"char\((\d+)\)")
 (def varchar-regex    #"varchar\((\d+)\)")
@@ -91,26 +91,26 @@
 (defn timestamp-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time 1970 1 1 0 0 1)
-    :max (time/date-time 2038 1 19 3 14 7)}})
+    :min (date-time 1970 1 1 0 0 1)
+    :max (date-time 2038 1 19 3 14 7)}})
 
 (defn datetime-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time 1000 1 1 0 0 0)
-    :max (time/date-time 9999 12 31 23 59 59)}})
+    :min (date-time 1000 1 1 0 0 0)
+    :max (date-time 9999 12 31 23 59 59)}})
 
 (defn date-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time 1000 1 1)
-    :max (time/date-time 9999 12 31)}})
+    :min (date-time 1000 1 1)
+    :max (date-time 9999 12 31)}})
 
 (defn time-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time 1000 1 1 0 0 0)
-    :max (time/date-time 9999 1 1 23 59 59)}})
+    :min (date-time 1000 1 1 0 0 0)
+    :max (date-time 9999 1 1 23 59 59)}})
 
 (defn tinyblob-metadata [column description]
   {(keyword column)
@@ -167,10 +167,13 @@
       [mediumblob-regex mediumblob-metadata]
       [longblob-regex   longblob-metadata]]))))
 
-(def connect-to-db (memoize #(default-connection (create-db (mysql %)))))
+(def make-connection
+  (memoize (fn [spec] (create-db (mysql spec)))))
+
+(defn connect-to-db [db-spec]
+  (default-connection (make-connection db-spec)))
 
 (defn mysql-db [args]
-  (connect-to-db (:database args))
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
