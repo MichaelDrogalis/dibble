@@ -122,39 +122,3 @@
   ([column value & {:as options}]
      (select-value column options (constantly value))))
 
-
-
-;;; Probably stored in a credentials Clojure file.
-(def rjmadmin {:db "rjmadmin" :user "root" :password "" :vendor :mysql})
-(def rjmdash {:db "rjmdashboards" :user "root" :password "" :vendor :mysql})
-
-;;; A few helper functions. Seeing how people use this will help me to figure
-;;; out what to put in the API. For example, a function called "choose" will
-;;; probably go into the next release, which does the following:
-(defn random-browser []
-  (rand-nth ["firefox" "chrome" "ie"]))
-
-(defn random-os []
-  (rand-nth ["windows" "linux" "xos x"]))
-
-(defseed users
-  {:database rjmadmin :table :rjm_users}
-  (inherit :uid)
-  (randomized :salt)
-  (randomized :saltedpw)
-  (randomized :email)
-  (with-fn :browser random-browser)
-  (with-fn :os random-os))
-
-(seed-table
- {:database rjmdash :table :charts :policy :clean-slate :n 5 :external-dependents [{:database rjmadmin :table :rjm_users}]}
- (randomized :chid)
- (randomized :cid)
- (randomized :uid :fk {users :uid})
- (randomized :categories)
- (randomized :catvalues)
- (randomized :restrictions)
- (randomized :restseq)
- (randomized :sizelimit)
- (randomized :dfid))
-
