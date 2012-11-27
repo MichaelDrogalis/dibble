@@ -1,90 +1,124 @@
 (ns dibble.core
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
+  (:require [korma.core :refer [insert delete values]]
+            [korma.db :refer [default-connection _default]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
-            [dibble.strings :refer :all]
-            [dibble.numbers :refer :all]
-            [dibble.time :refer :all]
-            [dibble.binary :refer :all]))
+            [dibble.random :as random]))
+
+(declare seed-table)
 
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defn seed [& rules]
-  (fn [table-description]
-    (reduce
-     (fn [data-seed rule-fn]
-       (merge data-seed (rule-fn table-description)))
-     {} rules)))
+(defprotocol PersistentConnection
+  (connect [this args])
+  (describe-table [this args]))
 
-(defn parse-description [args]
-  (cond (= (:vendor (:database args)) :mysql) (mysql/mysql-db args)
-        (= (:vendor (:database args)) :postgres) (postgres/postgres-db args)
-        (= (:vendor (:database args)) :sqlite3) (sqlite3/sqlite3-db args)
-        :else (throw (Throwable. "Database :vendor not supported"))))
+(defrecord MySQL []
+  PersistentConnection
+  (connect [_ args] (mysql/connect-to-db (:database args)))
+  (describe-table [_ args] (mysql/mysql-db args)))
 
-(defn clean-table [table]
+(defrecord Postgres []
+  PersistentConnection
+  (connect [_ args] (postgres/connect-to-db (:database args)))
+  (describe-table [_ args] (postgres/postgres-db args)))
+
+(defrecord SQLite3 []
+  PersistentConnection
+  (connect [_ args] (sqlite3/connect-to-db (:database args)))
+  (describe-table [_ args] (sqlite3/sqlite3-db args)))
+
+(defn vendor [{:keys [database]}]
+  (let [vendor (:vendor database)]
+    (cond (= vendor :mysql) (MySQL.)
+          (= vendor :postgres (Postgres.))
+          (= vendor :sqlite3 (SQLite3.)))))
+
+(defmacro with-connection [vendor-record args & exprs]
+  `(let [args# ~args
+         previous-connection# @_default]
+     (connect ~vendor-record args#)
+     ~@exprs
+     (default-connection previous-connection#)))
+
+(defn clean-table! [table]
   (delete table))
 
-(defn apply-policies [args]
+(defn apply-policies! [args]
   (let [tables (conj (:dependents args) (:table args))]
-    (cond (= (:policy args) :clean-slate) (dorun (map clean-table tables)))))
+    (cond (= (:policy args) :clean-slate) (doall (map clean-table! tables)))))
+
+(defn apply-external-policies! [args]
+  (if-not (empty? (:external-dependents args))
+    (doall (map (fn [dependent]
+                  (with-connection (vendor dependent) dependent
+                    (clean-table! (:table dependent))))
+                (:external-dependents args)))))
+
+(defn bequeath-value! [{:keys [fk] :as args} data]
+  (when fk
+    (dorun
+     (map
+      (fn [[foreign-table foreign-column]]
+        (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
+          (apply seed-table (concat gen-args (rest foreign-table)))))
+      fk))))
+
+(defn insert-data! [args rows table-structure]
+  (let [generation (map (fn [f] (f args table-structure)) rows)
+        seeds (apply merge (map :seeds generation))
+        fks (map :fks generation)]
+    (insert (:table args) (values seeds))
+    (dorun (map #(apply bequeath-value! %) fks))))
 
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
-  ([args & seeds]
-     (let [table-description (parse-description args)]
-       (apply-policies args)
-       (dotimes [_ (:n args 1)]
-         (let [data (apply merge (map (fn [f] (f args table-description)) seeds))]
-           (insert (:table args) (values data)))))))
+  ([args & rows]
+     (let [vendor-record (vendor args)]
+       (with-connection vendor-record args
+         (let [table-structure (describe-table vendor-record args)]
+           (apply-policies! args)
+           (apply-external-policies! args)
+           (dotimes [_ (:n args 1)]
+             (insert-data! args rows table-structure)))))))
 
-(defn bequeath-value! [args data]
-  (when (:fk args)
-    (dorun (map
-            (fn [[foreign-table foreign-column]]
-              (apply seed-table (concat [(assoc (first foreign-table) :autogen {foreign-column data})]
-                                        (rest foreign-table))))
-            (:fk args)))))
+(defn dispatch-type [constraints args]
+  (let [data-type (:type constraints)
+        f (cond (= data-type :string)   random/randomized-string
+                (= data-type :integer)  random/randomized-integer
+                (= data-type :decimal)  random/randomized-decimal
+                (= data-type :datetime) random/randomized-datetime
+                (= data-type :binary)   random/randomized-blob)]
+    (f (merge constraints args))))
 
-(defn- dispatch-type [constraints args]
-  (let [data-type (:type constraints)]
-    (cond (= data-type :string) (randomized-string constraints args)
-          (= data-type :integer) (randomized-integer constraints args)
-          (= data-type :decimal) (randomized-decimal constraints args)
-          (= data-type :datetime) (randomized-datetime constraints args)
-          (= data-type :binary) (randomized-blob constraints args))))
-  
+(defn select-value [column options f]
+  (partial
+   (fn [column options table-args table-structure]
+     (let [result (f column options table-args table-structure)]
+       {:seeds {column result} :fks [options result]}))
+   column options))
+
 (defn randomized
-  ([column] (randomized column {}))
-  ([column args]
-     (partial
-      (fn [column args seeding-args table-description]
-        (let [constraints (get table-description column)
-              result (dispatch-type constraints args)]
-          (bequeath-value! args result)
-          {column result}))
-      column args)))
+  ([column & {:as options}]
+     (select-value
+      column options
+      (fn [column options _ table-structure]
+        (dispatch-type (get table-structure column) options)))))
 
 (defn inherit
-  ([column] (inherit column {}))
-  ([column args]
-     (partial
-      (fn [column args seeding-args table-description]
-        (let [result (get (:autogen seeding-args) column)]
-          (bequeath-value! args result)
-          {column result}))
-      column args)))
+  ([column & {:as options}]
+     (select-value
+      column options
+      (fn [column _ table-args _]
+        (get (:autogen table-args) column)))))
+
+(defn with-fn
+  ([column f & {:as options}]
+     (select-value column options (fn [_ _ _ _] (f)))))  
 
 (defn value-of
-  ([column] (value-of column {} {}))
-  ([column value] (value-of column value {}))
-  ([column value args]
-     (partial
-      (fn [column value args seeding-args table-description]
-        (bequeath-value! args value)
-        {column value})
-      column value args)))
+  ([column value & {:as options}]
+     (select-value column options (constantly value))))
 

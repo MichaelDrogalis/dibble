@@ -1,7 +1,7 @@
 (ns dibble.postgres
-  (:require [korma.core :refer :all]
-            [korma.db :refer :all]
-            [clj-time.core :as time]))
+  (:require [korma.core :refer [exec-raw]]
+            [korma.db :refer [create-db postgres default-connection]]
+            [clj-time.core :refer [date-time]]))
 
 (def smallint-regex  #"smallint")
 (def integer-regex   #"integer")
@@ -69,14 +69,14 @@
 (defn timestamp-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time -4713471)
-    :max (time/date-time 294276)}})
+    :min (date-time -4713471)
+    :max (date-time 294276)}})
 
 (defn date-metadata [column description]
   {(keyword column)
    {:type :datetime
-    :min (time/date-time -4713)
-    :max (time/date-time 5874897)}})
+    :min (date-time -4713)
+    :max (date-time 5874897)}})
 
 (defn postgres-to-clj-type [[column data-type]]
   (first
@@ -98,10 +98,13 @@
       [timestamp-regex timestamp-metadata]
       [date-regex      date-metadata]]))))
 
-(def connect-to-db (memoize #(default-connection (create-db (postgres %)))))
+(def make-connection
+  (memoize (fn [spec] (create-db (postgres spec)))))
+
+(defn connect-to-db [db-spec]
+  (default-connection (make-connection db-spec)))
 
 (defn postgres-db [args]
-  (connect-to-db (:database args))
   (let [query (exec-raw (str "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name='" (name (:table args)) "'") :results)
         fields (map :column_name query)
         types (map :data_type query)]
