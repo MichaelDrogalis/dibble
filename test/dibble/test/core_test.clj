@@ -1,5 +1,6 @@
 (ns dibble.test.core-test
   (:require [midje.sweet :refer :all]
+            [korma.db :refer [default-connection]]
             [clj-time.core :as time]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
@@ -27,4 +28,3 @@
                (apply-policies! {:table :customers :policy :clean-slate :dependents [:pets]}))
          => (into #{} [:customers :pets]))))
 
- 

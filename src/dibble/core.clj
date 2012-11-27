@@ -1,6 +1,6 @@
 (ns dibble.core
   (:require [korma.core :refer [insert delete values]]
-            [korma.db :refer [default-connection]]
+            [korma.db :refer [default-connection _default]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
@@ -38,7 +38,7 @@
 
 (defmacro with-connection [vendor-record args & exprs]
   `(let [args# ~args
-         previous-connection# default-connection]
+         previous-connection# @_default]
      (connect ~vendor-record args#)
      ~@exprs
      (default-connection previous-connection#)))
@@ -53,18 +53,18 @@
 (defn apply-external-policies! [args]
   (if-not (empty? (:external-dependents args))
     (doall (map (fn [dependent]
-                  (with-connection args
+                  (with-connection (vendor dependent) dependent
                     (clean-table! (:table dependent))))
                 (:external-dependents args)))))
 
 (defn bequeath-value! [{:keys [fk] :as args} data]
   (when fk
-    (do
-      (map
-       (fn [[foreign-table foreign-column]]
-         (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
-           (apply seed-table (concat gen-args (rest foreign-table)))))
-       fk))))
+    (dorun
+     (map
+      (fn [[foreign-table foreign-column]]
+        (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
+          (apply seed-table (concat gen-args (rest foreign-table)))))
+      fk))))
 
 (defn insert-data! [args rows table-structure]
   (let [generation (map (fn [f] (f args table-structure)) rows)
@@ -96,8 +96,7 @@
 (defn select-value [column options f]
   (partial
    (fn [column options table-args table-structure]
-     (let [result (f column options table-structure table-args)]
-       (bequeath-value! options result)
+     (let [result (f column options table-args table-structure)]
        {:seeds {column result} :fks [options result]}))
    column options))
 
@@ -105,15 +104,15 @@
   ([column & {:as options}]
      (select-value
       column options
-      (fn [column options table-structure _]
+      (fn [column options _ table-structure]
         (dispatch-type (get table-structure column) options)))))
 
 (defn inherit
   ([column & {:as options}]
      (select-value
       column options
-      (fn [column _ table-structure _]
-        (get (:autogen table-structure) column)))))
+      (fn [column _ table-args _]
+        (get (:autogen table-args) column)))))
 
 (defn with-fn
   ([column f & {:as options}]
@@ -123,7 +122,39 @@
   ([column value & {:as options}]
      (select-value column options (constantly value))))
 
+
+
+;;; Probably stored in a credentials Clojure file.
+(def rjmadmin {:db "rjmadmin" :user "root" :password "" :vendor :mysql})
+(def rjmdash {:db "rjmdashboards" :user "root" :password "" :vendor :mysql})
+
+;;; A few helper functions. Seeing how people use this will help me to figure
+;;; out what to put in the API. For example, a function called "choose" will
+;;; probably go into the next release, which does the following:
+(defn random-browser []
+  (rand-nth ["firefox" "chrome" "ie"]))
+
+(defn random-os []
+  (rand-nth ["windows" "linux" "xos x"]))
+
+(defseed users
+  {:database rjmadmin :table :rjm_users}
+  (inherit :uid)
+  (randomized :salt)
+  (randomized :saltedpw)
+  (randomized :email)
+  (with-fn :browser random-browser)
+  (with-fn :os random-os))
+
 (seed-table
- {:database {:db "simulation" :user "root" :password "" :vendor :mysql} :table :people}
- (randomized :name :subtype :full-name))
+ {:database rjmdash :table :charts :policy :clean-slate :n 5 :external-dependents [{:database rjmadmin :table :rjm_users}]}
+ (randomized :chid)
+ (randomized :cid)
+ (randomized :uid :fk {users :uid})
+ (randomized :categories)
+ (randomized :catvalues)
+ (randomized :restrictions)
+ (randomized :restseq)
+ (randomized :sizelimit)
+ (randomized :dfid))
 
