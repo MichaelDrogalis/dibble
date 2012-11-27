@@ -40,7 +40,7 @@
 (defn random-last-name []
   (rand-nth last-names))
 
-(defn- random-string [length]
+(defn random-string [length]
   (let [low-ascii-char 97
         high-ascii-char 122
         infinite-char-seq (repeatedly #(random-integer low-ascii-char high-ascii-char))]
