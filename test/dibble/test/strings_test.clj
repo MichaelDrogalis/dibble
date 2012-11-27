@@ -26,7 +26,3 @@
 (defn space? [char]
   (= char \space))
 
-(fact (not-any? space?  (randomized-string (merge column {:subtype :first-name}))) => true)
-(fact (not-any? space? (randomized-string (merge column {:subtype :last-name}))) => true)
-(fact (count (filter space? (randomized-string (merge column {:subtype :full-name})))) => 1)
-
