@@ -1,4 +1,4 @@
-(defproject dibble "0.1.5-SNAPSHOT"
+(defproject dibble "0.1.4"
   :description "A Clojure library for seeding databases"
   :url "https://github.com/MichaelDrogalis/dibble"
   :license {:name "Eclipse Public License"
@@ -7,7 +7,7 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [midje "1.4.0"]
                  [com.stuartsierra/lazytest "1.2.3"]
-                 [korma "0.3.0-beta9"]
+                 [korma "0.3.0-beta11"]
                  [mysql/mysql-connector-java "5.1.21"]
                  [postgresql "9.0-801.jdbc4"]
                  [org.xerial/sqlite-jdbc "3.6.16"]
