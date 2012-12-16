@@ -1,4 +1,4 @@
-(defproject dibble "0.1.5-SNAPSHOT"
+(defproject dibble "0.1.4"
   :description "A Clojure library for seeding databases"
   :url "https://github.com/MichaelDrogalis/dibble"
   :license {:name "Eclipse Public License"
