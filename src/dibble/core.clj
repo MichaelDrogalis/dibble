@@ -11,13 +11,15 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defmulti connect (fn [args] (:vendor (:database args))))
+(defn vendor-name [args] (:vendor (:database args)))
+
+(defmulti connect vendor-name)
 
 (defmethod connect :mysql    [args] (mysql/connect-to-db (:database args)))
 (defmethod connect :postgres [args] (postgres/connect-to-db (:database args)))
 (defmethod connect :sqlite3  [args] (sqlite3/connect-to-db (:database args)))
 
-(defmulti describe-table (fn [args] (:vendor (:database args))))
+(defmulti describe-table vendor-name)
 
 (defmethod describe-table :mysql    [args] (mysql/mysql-db args))
 (defmethod describe-table :postgres [args] (postgres/postgres-db args))
