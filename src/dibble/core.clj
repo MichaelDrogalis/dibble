@@ -30,11 +30,12 @@
   (connect [_ args] (sqlite3/connect-to-db (:database args)))
   (describe-table [_ args] (sqlite3/sqlite3-db args)))
 
-(defn vendor [{:keys [database]}]
-  (let [vendor (:vendor database)]
-    (cond (= vendor :mysql) (MySQL.)
-          (= vendor :postgres (Postgres.))
-          (= vendor :sqlite3 (SQLite3.)))))
+(defmulti vendor
+  (fn [args] (:vendor (:database args))))
+
+(defmethod vendor :mysql [args] (MySQL.))
+(defmethod vendor :postgres [args] (Postgres.))
+(defmethod vendor :sqlite3 [args] (SQLite3.))
 
 (defmacro with-connection [vendor-record args & exprs]
   `(let [args# ~args
@@ -121,4 +122,8 @@
 (defn value-of
   ([column value & {:as options}]
      (select-value column options (constantly value))))
+
+(seed-table
+ {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people :n 10 :policy :clean-slate}
+ (randomized :name :subtype :full-name))
 
