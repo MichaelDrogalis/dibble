@@ -11,36 +11,22 @@
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
 
-(defprotocol PersistentConnection
-  (connect [this args])
-  (describe-table [this args]))
+(defmulti connect (fn [args] (:vendor (:database args))))
 
-(defrecord MySQL []
-  PersistentConnection
-  (connect [_ args] (mysql/connect-to-db (:database args)))
-  (describe-table [_ args] (mysql/mysql-db args)))
+(defmethod connect :mysql    [args] (mysql/connect-to-db (:database args)))
+(defmethod connect :postgres [args] (postgres/connect-to-db (:database args)))
+(defmethod connect :sqlite3  [args] (sqlite3/connect-to-db (:database args)))
 
-(defrecord Postgres []
-  PersistentConnection
-  (connect [_ args] (postgres/connect-to-db (:database args)))
-  (describe-table [_ args] (postgres/postgres-db args)))
+(defmulti describe-table (fn [args] (:vendor (:database args))))
 
-(defrecord SQLite3 []
-  PersistentConnection
-  (connect [_ args] (sqlite3/connect-to-db (:database args)))
-  (describe-table [_ args] (sqlite3/sqlite3-db args)))
+(defmethod describe-table :mysql    [args] (mysql/mysql-db args))
+(defmethod describe-table :postgres [args] (postgres/postgres-db args))
+(defmethod describe-table :sqlite3  [args] (sqlite3/sqlite3-db args))
 
-(defmulti vendor
-  (fn [args] (:vendor (:database args))))
-
-(defmethod vendor :mysql [args] (MySQL.))
-(defmethod vendor :postgres [args] (Postgres.))
-(defmethod vendor :sqlite3 [args] (SQLite3.))
-
-(defmacro with-connection [vendor-record args & exprs]
+(defmacro with-connection [args & exprs]
   `(let [args# ~args
          previous-connection# @_default]
-     (connect ~vendor-record args#)
+     (connect args#)
      ~@exprs
      (default-connection previous-connection#)))
 
@@ -54,7 +40,7 @@
 (defn apply-external-policies! [args]
   (if-not (empty? (:external-dependents args))
     (doall (map (fn [dependent]
-                  (with-connection (vendor dependent) dependent
+                  (with-connection dependent
                     (clean-table! (:table dependent))))
                 (:external-dependents args)))))
 
@@ -77,13 +63,12 @@
 (defn seed-table
   ([bundled-args] (apply seed-table bundled-args))
   ([args & rows]
-     (let [vendor-record (vendor args)]
-       (with-connection vendor-record args
-         (let [table-structure (describe-table vendor-record args)]
-           (apply-policies! args)
-           (apply-external-policies! args)
-           (dotimes [_ (:n args 1)]
-             (insert-data! args rows table-structure)))))))
+     (with-connection args
+       (let [table-structure (describe-table args)]
+         (apply-policies! args)
+         (apply-external-policies! args)
+         (dotimes [_ (:n args 1)]
+           (insert-data! args rows table-structure))))))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
