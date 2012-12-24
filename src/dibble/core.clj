@@ -110,7 +110,3 @@
   ([column value & {:as options}]
      (select-value column options (constantly value))))
 
-(seed-table
- {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :table :people :n 10 :policy :clean-slate}
- (randomized :name :subtype :full-name))
-
