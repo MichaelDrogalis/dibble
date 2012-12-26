@@ -102,15 +102,12 @@
 (def make-connection
   (memoize (fn [spec] (create-db (postgres spec)))))
 
-(defn connect-to-db [db-spec]
-  (default-connection (make-connection db-spec)))
+(defmethod connect :postgres [{:keys [database]}]
+  (default-connection (make-connection database)))
 
-(defn postgres-db [args]
+(defmethod describe-table :postgres [args]
   (let [query (exec-raw (str "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name='" (name (:table args)) "'") :results)
         fields (map :column_name query)
         types (map :data_type query)]
     (apply merge (map postgres-to-clj-type (partition 2 (interleave fields types))))))
-
-(defmethod connect :postgres [args] (connect-to-db (:database args)))
-(defmethod describe-table :postgres [args] (postgres-db args))
 

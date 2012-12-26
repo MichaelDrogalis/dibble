@@ -171,15 +171,12 @@
 (def make-connection
   (memoize (fn [spec] (create-db (mysql spec)))))
 
-(defn connect-to-db [db-spec]
-  (default-connection (make-connection db-spec)))
+(defmethod connect :mysql [{:keys [database]}]
+  (default-connection (make-connection database)))
 
-(defn mysql-db [args]
+(defmethod describe-table :mysql [args]
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
     (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
-
-(defmethod connect :mysql [args] (connect-to-db (:database args)))
-(defmethod describe-table :mysql [args] (mysql-db args))
 
