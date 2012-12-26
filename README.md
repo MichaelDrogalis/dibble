@@ -1,4 +1,4 @@
-# dibble
+# dibble ![travis-build](https://api.travis-ci.org/MichaelDrogalis/dibble.png)
 
 Dibble is a Clojure library that intelligently, randomly seeds databases by inferencing the underlying table structure.
 See the [docs](http://michaeldrogalis.github.com/dibble) for more more information.
