@@ -1,29 +1,14 @@
 (ns dibble.core
   (:require [korma.core :refer [insert delete values]]
             [korma.db :refer [default-connection _default]]
+            [dibble.vendor :refer [connect describe-table]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
             [dibble.sqlite3 :as sqlite3]
             [dibble.random :as random]))
 
-(declare seed-table)
-
 (defmacro defseed [seed-name args & rules]
   `(def ~seed-name [~args ~@rules]))
-
-(defn vendor-name [args] (:vendor (:database args)))
-
-(defmulti connect vendor-name)
-
-(defmethod connect :mysql    [args] (mysql/connect-to-db (:database args)))
-(defmethod connect :postgres [args] (postgres/connect-to-db (:database args)))
-(defmethod connect :sqlite3  [args] (sqlite3/connect-to-db (:database args)))
-
-(defmulti describe-table vendor-name)
-
-(defmethod describe-table :mysql    [args] (mysql/mysql-db args))
-(defmethod describe-table :postgres [args] (postgres/postgres-db args))
-(defmethod describe-table :sqlite3  [args] (sqlite3/sqlite3-db args))
 
 (defmacro with-connection [args & exprs]
   `(let [args# ~args
@@ -45,6 +30,8 @@
                   (with-connection dependent
                     (clean-table! (:table dependent))))
                 (:external-dependents args)))))
+
+(declare seed-table)
 
 (defn bequeath-value! [{:keys [fk] :as args} data]
   (when fk

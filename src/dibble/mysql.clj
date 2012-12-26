@@ -1,7 +1,8 @@
 (ns dibble.mysql
   (:require [korma.core :refer [exec-raw]]
             [korma.db :refer [create-db mysql default-connection]]
-            [clj-time.core :refer [date-time]]))
+            [clj-time.core :refer [date-time]]
+            [dibble.vendor :refer [connect describe-table]]))
 
 (def char-regex       #"char\((\d+)\)")
 (def varchar-regex    #"varchar\((\d+)\)")
@@ -178,4 +179,7 @@
         fields (map :Field query)
         types (map :Type query)]
     (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
+
+(defmethod connect :mysql [args] (connect-to-db (:database args)))
+(defmethod describe-table :mysql [args] (mysql-db args))
 

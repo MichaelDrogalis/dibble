@@ -1,7 +1,8 @@
 (ns dibble.sqlite3
   (:require [korma.core :refer [exec-raw]]
             [korma.db :refer [create-db sqlite3 default-connection]]
-            [dibble.mysql :as mysql]))
+            [dibble.mysql :as mysql]
+            [dibble.vendor :refer [connect describe-table]]))
 
 (def make-connection
   (memoize (fn [spec] (create-db (sqlite3 spec)))))
@@ -17,4 +18,7 @@
         fields (map :name query)
         types (map :type query)]
     (merge (apply merge (map sqlite3-to-clj-type (partition 2 (interleave fields types)))) (:types args))))
+
+(defmethod connect :sqlite3  [args] (connect-to-db (:database args)))
+(defmethod describe-table :sqlite3  [args] (sqlite3-db args))
 
