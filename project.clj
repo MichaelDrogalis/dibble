@@ -12,10 +12,6 @@
                  [postgresql "9.0-801.jdbc4"]
                  [org.xerial/sqlite-jdbc "3.6.16"]
                  [cheshire "5.0.0"]
-                 [clj-time "0.4.4"]
-                 [log4j "1.2.15" :exclusions [javax.mail/mail
-                                              javax.jms/jms
-                                              com.sun.jdmk/jmxtools
-                                              com.sun.jmx/jmxri]]]
+                 [clj-time "0.4.4"]]
   :plugins [[lein-midje "2.0.0-SNAPSHOT"]])
 
