@@ -71,6 +71,7 @@ Here's some things I'd like to have that aren't done:
 - More numeric options (prime?, symbols?, spaces? etc)
 - Possibly rewrite the docs to be a little clearer?
 - More database implementations (specifically Mongo)
+- Better error messages
 
 ## License
 
