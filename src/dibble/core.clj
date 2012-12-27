@@ -33,31 +33,13 @@
 
 (declare seed-table)
 
-(defn bequeath-value! [{:keys [fk] :as args} data]
-  (when fk
-    (dorun
-     (map
-      (fn [[foreign-table foreign-column]]
-        (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
-          (apply seed-table (concat gen-args (rest foreign-table)))))
-      fk))))
 
-(defn insert-data! [args rows table-structure]
-  (let [generation (map (fn [f] (f args table-structure)) rows)
-        seeds (apply merge (map :seeds generation))
-        fks (map :fks generation)]
-    (insert (:table args) (values seeds))
-    (dorun (map #(apply bequeath-value! %) fks))))
-
-(defn seed-table
-  ([bundled-args] (apply seed-table bundled-args))
-  ([args & rows]
-     (with-connection args
-       (let [table-structure (describe-table args)]
-         (apply-policies! args)
-         (apply-external-policies! args)
-         (dotimes [_ (:n args 1)]
-           (insert-data! args rows table-structure))))))
+(defn select-value [column options f]
+  (partial
+   (fn [column options table-args table-structure]
+     (let [result (f column options table-args table-structure)]
+       {:seeds {column result} :fks [options result]}))
+   column options))
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
@@ -67,13 +49,6 @@
                 (= data-type :datetime) random/randomized-datetime
                 (= data-type :binary)   random/randomized-blob)]
     (f (merge constraints args))))
-
-(defn select-value [column options f]
-  (partial
-   (fn [column options table-args table-structure]
-     (let [result (f column options table-args table-structure)]
-       {:seeds {column result} :fks [options result]}))
-   column options))
 
 (defn randomized
   ([column & {:as options}]
@@ -96,4 +71,39 @@
 (defn value-of
   ([column value & {:as options}]
      (select-value column options (constantly value))))
+
+(defn bequeath-value! [{:keys [fk] :as args} data]
+  (when fk
+    (dorun
+     (map
+      (fn [[foreign-table foreign-column]]
+        (let [gen-args [(assoc (first foreign-table) :autogen {foreign-column data})]]
+          (apply seed-table (concat gen-args (rest foreign-table)))))
+      fk))))
+
+(defn bind-to-fn [call-seq args table-structure]
+  (let [fn-binders {:randomized randomized
+                    :inherit inherit
+                    :with-fn with-fn
+                    :value-of value-of}]
+    (map (fn [call]
+           ((apply ((first call) fn-binders) (rest call)) args table-structure))
+         call-seq)))
+
+(defn insert-data! [args call-seq table-structure]
+  (let [fn-call-results (bind-to-fn call-seq args table-structure)
+        seeds (apply merge (map :seeds fn-call-results))
+        fks (map :fks fn-call-results)]
+    (insert (:table args) (values seeds))
+    (dorun (map #(apply bequeath-value! %) fks))))
+
+(defn seed-table
+  ([bundled-args] (apply seed-table bundled-args))
+  ([args & generation-calls]
+     (with-connection args
+       (let [table-structure (describe-table args)]
+         (apply-policies! args)
+         (apply-external-policies! args)
+         (dotimes [_ (:n args 1)]
+           (insert-data! args generation-calls table-structure))))))
 
