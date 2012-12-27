@@ -36,3 +36,4 @@
 
 (fact (-> (bind-fn [[:randomized :age :min 0 :max 10]] {} {:age {:type :integer}}) first :seeds :age) => integer?)
 (fact (-> (bind-fn [[:inherit :id]] {:autogen {:id 10}} {:id :integer}) first :seeds :id) => 10)
+
