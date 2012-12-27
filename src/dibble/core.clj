@@ -80,7 +80,7 @@
           (apply seed-table (concat gen-args (rest foreign-table)))))
       fk))))
 
-(defn bind-to-fn [call-seq args table-structure]
+(defn bind-fn [call-seq args table-structure]
   (let [fn-binders {:randomized randomized
                     :inherit inherit
                     :with-fn with-fn
@@ -90,7 +90,7 @@
          call-seq)))
 
 (defn insert-data! [args call-seq table-structure]
-  (let [fn-call-results (bind-to-fn call-seq args table-structure)
+  (let [fn-call-results (bind-fn call-seq args table-structure)
         seeds (apply merge (map :seeds fn-call-results))
         fks (map :fks fn-call-results)]
     (insert (:table args) (values seeds))
