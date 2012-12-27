@@ -33,7 +33,6 @@
 
 (declare seed-table)
 
-
 (defn select-value [column options f]
   (partial
    (fn [column options table-args table-structure]
