@@ -1,6 +1,7 @@
 (ns dibble.core
   (:require [korma.core :refer [insert delete values]]
             [korma.db :refer [default-connection _default]]
+            [dire.core :refer [with-precondition! with-handler!]]
             [dibble.vendor :refer [connect describe-table]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
@@ -42,6 +43,7 @@
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
+        ;;; Using a simple cond for performance.
         f (cond (= data-type :string)   random/randomized-string
                 (= data-type :integer)  random/randomized-integer
                 (= data-type :decimal)  random/randomized-decimal
@@ -105,4 +107,21 @@
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
            (insert-data! args generation-calls table-structure))))))
+
+(with-precondition! #'seed-table
+  :specifies-table
+  (fn [args & more]
+    (println "Check it")
+    false))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-table}
+  (fn [e & args]
+    (throw (Throwable. "Argument map to defseed has no :table key"))))
+
+(defseed people
+  {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :policy :clean-slate :n 10}
+  [:randomized :name :subtype :first-name])
+
+(seed-table people)
 
