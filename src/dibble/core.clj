@@ -110,7 +110,9 @@
 
 (with-precondition! #'seed-table
   :specifies-table
-  (fn [args & _] (contains? args :table)))
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? args :table))))
 
 (with-handler! #'seed-table
   {:precondition :specifies-table}
@@ -118,7 +120,9 @@
 
 (with-precondition! #'seed-table
   :specifies-vendor
-  (fn [args & _] (contains? (:database args) :vendor)))
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? (:database args) :vendor))))
 
 (with-handler! #'seed-table
   {:precondition :specifies-vendor}
@@ -126,7 +130,9 @@
 
 (with-precondition! #'seed-table
   :specifies-db
-  (fn [args & _] (contains? (:database args) :db)))
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? (:database args) :db))))
 
 (with-handler! #'seed-table
   {:precondition :specifies-db}
