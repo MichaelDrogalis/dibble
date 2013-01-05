@@ -28,3 +28,12 @@
                (apply-policies! {:table :customers :policy :clean-slate :dependents [:pets]}))
          => (into #{} [:customers :pets]))))
 
+(fact (-> (bind-fn [[:value-of :name "Mike"]] {} {:name :string}) first :seeds :name) => "Mike")
+(fact (-> (bind-fn [[:value-of :age 21]] {} {:age :integer}) first :seeds :age) => 21)
+
+(fact (-> (bind-fn [[:with-fn :message (constantly "Hello")]] {} {:message :string})
+          first :seeds :message) => "Hello")
+
+(fact (-> (bind-fn [[:randomized :age :min 0 :max 10]] {} {:age {:type :integer}}) first :seeds :age) => integer?)
+(fact (-> (bind-fn [[:inherit :id]] {:autogen {:id 10}} {:id :integer}) first :seeds :id) => 10)
+

@@ -1,7 +1,8 @@
 (ns dibble.postgres
   (:require [korma.core :refer [exec-raw]]
             [korma.db :refer [create-db postgres default-connection]]
-            [clj-time.core :refer [date-time]]))
+            [clj-time.core :refer [date-time]]
+            [dibble.vendor :refer [connect describe-table]]))
 
 (def smallint-regex  #"smallint")
 (def integer-regex   #"integer")
@@ -101,10 +102,10 @@
 (def make-connection
   (memoize (fn [spec] (create-db (postgres spec)))))
 
-(defn connect-to-db [db-spec]
-  (default-connection (make-connection db-spec)))
+(defmethod connect :postgres [{:keys [database]}]
+  (default-connection (make-connection database)))
 
-(defn postgres-db [args]
+(defmethod describe-table :postgres [args]
   (let [query (exec-raw (str "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name='" (name (:table args)) "'") :results)
         fields (map :column_name query)
         types (map :data_type query)]

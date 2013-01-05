@@ -1,7 +1,8 @@
 (ns dibble.mysql
   (:require [korma.core :refer [exec-raw]]
             [korma.db :refer [create-db mysql default-connection]]
-            [clj-time.core :refer [date-time]]))
+            [clj-time.core :refer [date-time]]
+            [dibble.vendor :refer [connect describe-table]]))
 
 (def char-regex       #"char\((\d+)\)")
 (def varchar-regex    #"varchar\((\d+)\)")
@@ -170,10 +171,10 @@
 (def make-connection
   (memoize (fn [spec] (create-db (mysql spec)))))
 
-(defn connect-to-db [db-spec]
-  (default-connection (make-connection db-spec)))
+(defmethod connect :mysql [{:keys [database]}]
+  (default-connection (make-connection database)))
 
-(defn mysql-db [args]
+(defmethod describe-table :mysql [args]
   (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
         fields (map :Field query)
         types (map :Type query)]
