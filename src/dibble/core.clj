@@ -110,11 +110,25 @@
 
 (with-precondition! #'seed-table
   :specifies-table
-  (fn [args & more]
-    (contains? args :table)))
+  (fn [args & _] (contains? args :table)))
 
 (with-handler! #'seed-table
   {:precondition :specifies-table}
-  (fn [e & args]
-    (throw (Throwable. "Argument map to defseed has no :table key"))))
+  (fn [& _] (throw (Throwable. "Argument map to defseed has no :table key"))))
+
+(with-precondition! #'seed-table
+  :specifies-vendor
+  (fn [args & _] (contains? (:database args) :vendor)))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-vendor}
+  (fn [& _] (throw (Throwable. "Argument submap :database to defseed has no :vendor key"))))
+
+(with-precondition! #'seed-table
+  :specifies-db
+  (fn [args & _] (contains? (:database args) :db)))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-db}
+  (fn [& _] (throw (Throwable. "Argument submap :database to defseed has no :db key"))))
 
