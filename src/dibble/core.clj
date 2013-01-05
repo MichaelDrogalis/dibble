@@ -111,17 +111,10 @@
 (with-precondition! #'seed-table
   :specifies-table
   (fn [args & more]
-    (println "Check it")
-    false))
+    (contains? args :table)))
 
 (with-handler! #'seed-table
   {:precondition :specifies-table}
   (fn [e & args]
     (throw (Throwable. "Argument map to defseed has no :table key"))))
-
-(defseed people
-  {:database {:vendor :mysql :db "simulation" :user "root" :password ""} :policy :clean-slate :n 10}
-  [:randomized :name :subtype :first-name])
-
-(seed-table people)
 
