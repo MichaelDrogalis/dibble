@@ -55,7 +55,7 @@
                                 <pre>
                 <code class="seed-code">
 (defproject ...
-  :dependencies [[dibble.core "0.1.4"]]
+  :dependencies [[dibble.core "0.2.0-beta1"]]
   ...)
                 </code>
             </pre>
@@ -93,8 +93,8 @@
                 <code class="seed-code">
 (defseed people
   {:database db :table :people}
-  (value-of :name "Mike")
-  (value-of :age 21))
+  [:value-of :name "Mike"]
+  [:value-of :age 21])
 
 (seed-table people)
                 </code>
@@ -118,15 +118,15 @@
                 <code class="seed-code">
 (defseed people
   {:database db :table :people}
-  (randomized :name)
-  (randomized :lucky_number))
+  [:randomized :name]
+  [:randomized :lucky_number])
 
 (seed-table people)
                 </code>
             </pre>
                 </div>
                 <div class="span4 narrative">
-                    <code>randomize</code> is the reason I built this library. This function will inference the underlying table
+                    <code>randomized</code> is the reason I built this library. This function will inference the underlying table
                     structure and pick a suitable value seed with. If the column 'name' is a text column, Dibble will produce some text.
                     The same goes for numeric types, and anything else that is implemented.
                 </div>
@@ -144,12 +144,12 @@
                 <code class="seed-code">
 (defseed pets
   {:database db :table :pets}
-  (inherit :pet_id)
-  (randomized :name))
+  [:inherit :pet_id]
+  [:randomized :name])
 
 (defseed people
   {:database db :table :people}
-  (randomized :number :fk {pets :pet_id}))
+  [:randomized :number :fk {pets :pet_id}])
 
 (seed-table people)
                 </code>
@@ -175,8 +175,8 @@
                 <code class="seed-code">
 (defseed people
   {:database db :table :people :n 50}
-  (randomized :name :length 16)
-  (randomized :number :min 5 :max 10))
+  [:randomized :name :length 16]
+  [:randomized :number :min 5 :max 10])
 
 (seed-table people)
                 </code>
@@ -316,7 +316,7 @@
 (def type-map {:unknown_column_type {:type :integer :min 0 :max 10}})
 
 (seed-table {:database db :table :people :types type-map}
-  (randomized :unknown_column_type))
+  [:randomized :unknown_column_type])
                 </code>
             </pre>
                 </div>
@@ -338,8 +338,8 @@
 (defseed people
   {:database db :table :people
    :policy :clean-slate :n 200}
-  (randomized :name)
-  (randomized :number))
+  [:randomized :name]
+  [:randomized :number])
 
 (seed-table people)
                 </code>
