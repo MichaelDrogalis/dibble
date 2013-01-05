@@ -1,6 +1,7 @@
 (ns dibble.core
   (:require [korma.core :refer [insert delete values]]
             [korma.db :refer [default-connection _default]]
+            [dire.core :refer [with-precondition! with-handler!]]
             [dibble.vendor :refer [connect describe-table]]
             [dibble.mysql :as mysql]
             [dibble.postgres :as postgres]
@@ -42,6 +43,7 @@
 
 (defn dispatch-type [constraints args]
   (let [data-type (:type constraints)
+        ;;; Using a simple cond for performance.
         f (cond (= data-type :string)   random/randomized-string
                 (= data-type :integer)  random/randomized-integer
                 (= data-type :decimal)  random/randomized-decimal
@@ -105,4 +107,34 @@
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
            (insert-data! args generation-calls table-structure))))))
+
+(with-precondition! #'seed-table
+  :specifies-table
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? args :table))))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-table}
+  (fn [& _] (throw (Throwable. "Argument map to defseed has no :table key"))))
+
+(with-precondition! #'seed-table
+  :specifies-vendor
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? (:database args) :vendor))))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-vendor}
+  (fn [& _] (throw (Throwable. "Argument submap :database to defseed has no :vendor key"))))
+
+(with-precondition! #'seed-table
+  :specifies-db
+  (fn handler
+    ([[args & more]] (handler args more))
+    ([args & _] (contains? (:database args) :db))))
+
+(with-handler! #'seed-table
+  {:precondition :specifies-db}
+  (fn [& _] (throw (Throwable. "Argument submap :database to defseed has no :db key"))))
 
