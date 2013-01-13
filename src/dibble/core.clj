@@ -41,15 +41,16 @@
        {:seeds {column result} :fks [options result]}))
    column options))
 
+(defmulti enqueue-data-generation :type)
+
+(defmethod enqueue-data-generation :string [constraints] random/randomized-string)
+(defmethod enqueue-data-generation :integer [constraints] random/randomized-integer)
+(defmethod enqueue-data-generation :decimal [constraints] random/randomized-decimal)
+(defmethod enqueue-data-generation :datetime [constraints] random/randomized-datetime)
+(defmethod enqueue-data-generation :binary [constraints] random/randomized-blob)
+
 (defn dispatch-type [constraints args]
-  (let [data-type (:type constraints)
-        ;;; Using a simple cond for performance.
-        f (cond (= data-type :string)   random/randomized-string
-                (= data-type :integer)  random/randomized-integer
-                (= data-type :decimal)  random/randomized-decimal
-                (= data-type :datetime) random/randomized-datetime
-                (= data-type :binary)   random/randomized-blob)]
-    (f (merge constraints args))))
+  ((enqueue-data-generation constraints) (merge constraints args)))
 
 (defn randomized
   ([column & {:as options}]
