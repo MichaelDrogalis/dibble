@@ -41,16 +41,25 @@
        {:seeds {column result} :fks [options result]}))
    column options))
 
-(defmulti enqueue-data-generation :type)
+(defmulti generate-data (fn [constraints _] (:type constraints)))
 
-(defmethod enqueue-data-generation :string [constraints] random/randomized-string)
-(defmethod enqueue-data-generation :integer [constraints] random/randomized-integer)
-(defmethod enqueue-data-generation :decimal [constraints] random/randomized-decimal)
-(defmethod enqueue-data-generation :datetime [constraints] random/randomized-datetime)
-(defmethod enqueue-data-generation :binary [constraints] random/randomized-blob)
+(defmethod generate-data :string [constraints args]
+  (random/randomized-string (merge constraints args)))
+
+(defmethod generate-data :integer [constraints args]
+  (random/randomized-integer (merge constraints args)))
+
+(defmethod generate-data :decimal [constraints args]
+  (random/randomized-decimal (merge constraints args)))
+
+(defmethod generate-data :datetime [constraints args]
+  (random/randomized-datetime (merge constraints args)))
+
+(defmethod generate-data :binary [constraints args]
+  (random/randomized-blob (merge constraints args)))
 
 (defn dispatch-type [constraints args]
-  ((enqueue-data-generation constraints) (merge constraints args)))
+  (generate-data constraints args))
 
 (defn randomized
   ([column & {:as options}]
@@ -107,7 +116,7 @@
          (apply-policies! args)
          (apply-external-policies! args)
          (dotimes [_ (:n args 1)]
-           (insert-data! args generation-calls table-structure))))))
+           (future (insert-data! args generation-calls table-structure)))))))
 
 (with-precondition! #'seed-table
   :specifies-table

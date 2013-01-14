@@ -13,7 +13,6 @@
                  [org.xerial/sqlite-jdbc "3.6.16"]
                  [cheshire "5.0.0"]
                  [clj-time "0.4.4"]
-                 [dire "0.2.0"]
-                 [lamina "0.5.0-beta8"]]
+                 [dire "0.2.0"]]
   :plugins [[lein-midje "2.0.4"]])
 
