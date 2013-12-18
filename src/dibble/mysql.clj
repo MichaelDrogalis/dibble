@@ -1,8 +1,8 @@
 (ns dibble.mysql
-  (:require [korma.core :refer [exec-raw]]
-            [korma.db :refer [create-db mysql default-connection]]
+  (:require [korma.core :refer [delete exec-raw]]
+            [korma.db :refer [create-db mysql with-db]]
             [clj-time.core :refer [date-time]]
-            [dibble.vendor :refer [connect describe-table]]))
+            [dibble.vendor :refer [describe-table clean-table!]]))
 
 (def char-regex       #"char\((\d+)\)")
 (def varchar-regex    #"varchar\((\d+)\)")
@@ -160,15 +160,16 @@
       [date-regex       date-metadata]
       [time-regex       time-metadata]]))))
 
-(def make-connection
-  (memoize (fn [spec] (create-db (mysql spec)))))
-
-(defmethod connect :mysql [{:keys [database]}]
-  (default-connection (make-connection database)))
-
 (defmethod describe-table :mysql [args]
-  (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
-        fields (map :Field query)
-        types (map :Type query)]
-    (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types))))))
+  (with-db (create-db (mysql (:database args)))
+    (korma.config/set-delimiters "`")
+    (let [query (exec-raw (str "show columns from " (name (:table args))) :results)
+          fields (map :Field query)
+          types (map :Type query)]
+      (apply merge (map mysql-to-clj-type (partition 2 (interleave fields types)))))))
+
+(defmethod clean-table! :mysql [args table]
+  (with-db (create-db (mysql (:database args)))
+    (korma.config/set-delimiters "`")
+    (delete table)))
 
