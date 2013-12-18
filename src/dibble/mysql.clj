@@ -173,3 +173,7 @@
     (korma.config/set-delimiters "`")
     (delete table)))
 
+(defmethod insert-row! :mysql [args table row]
+  )
+
+
