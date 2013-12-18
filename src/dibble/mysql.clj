@@ -22,10 +22,6 @@
 (def datetime-regex   #"datetime")
 (def date-regex       #"date")
 (def time-regex       #"time")
-(def tinyblob-regex   #"tinyblob")
-(def blob-regex       #"blob")
-(def mediumblob-regex #"mediumblob")
-(def longblob-regex   #"longblob")
 
 (defn char-metadata [column description]
   {(keyword column) {:type :string :min 0 :max (read-string (nth description 1))}})
@@ -162,11 +158,7 @@
       [timestamp-regex  timestamp-metadata]
       [datetime-regex   datetime-metadata]
       [date-regex       date-metadata]
-      [time-regex       time-metadata]
-      [tinyblob-regex   tinyblob-metadata]
-      [blob-regex       blob-metadata]
-      [mediumblob-regex mediumblob-metadata]
-      [longblob-regex   longblob-metadata]]))))
+      [time-regex       time-metadata]]))))
 
 (def make-connection
   (memoize (fn [spec] (create-db (mysql spec)))))
