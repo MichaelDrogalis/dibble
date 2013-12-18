@@ -3,16 +3,22 @@
   (:import [java.util Random]
            [java.sql Timestamp]))
 
+(def first-names
+  (read-string (slurp (clojure.java.io/resource "first-names.edn"))))
+
+(def last-names
+  (read-string (slurp (clojure.java.io/resource "last-names.edn"))))
+
 (defmulti random-string :subtype)
 
 (defmethod random-string :first-name [opts]
-  "Jane")
+  (rand-nth first-names))
 
 (defmethod random-string :last-name [opts]
-  "Doe")
+  (rand-nth last-names))
 
 (defmethod random-string :full-name [opts]
-  "Jack Doe")
+  (str (random-string {:subtype :first-name}) " " (random-string {:subtype :last-name})))
 
 (defmethod random-string :default [opts]
   (if (:length opts)
