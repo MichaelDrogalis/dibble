@@ -1,6 +1,5 @@
 (ns dibble.data
-  (:require [clojure.data.generators :as gen]
-            [clj-time.coerce :refer [to-long]])
+  (:require [clj-time.coerce :refer [to-long]])
   (:import [java.util Random]
            [java.sql Timestamp]))
 
